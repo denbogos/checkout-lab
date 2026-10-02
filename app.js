@@ -38,7 +38,7 @@ function animatePress(el,strong=false){
  el.getAnimations?.().forEach(a=>a.cancel());
  el.animate([
   {transform:'translate3d(0,0,0) scale(1)'},
-  {transform:`translate3d(0,${strong?2:1}px,0) scale(${strong?.955:.972})`,offset:.34},
+  {transform:`translate3d(0,${strong?2:1}px,0) scale(${strong ? .955 : .972})`,offset:.34},
   {transform:'translate3d(0,0,0) scale(1.018)',offset:.72},
   {transform:'translate3d(0,0,0) scale(1)'}
  ],{duration:strong?220:150,easing:'cubic-bezier(.2,.85,.25,1)'});
@@ -53,7 +53,7 @@ function punchScore(kind='score'){
   ]:kind==='bust'?[
    {transform:'translate3d(0,0,0) scale(1)'},{transform:'translate3d(-3px,0,0) scale(.97)',offset:.22},{transform:'translate3d(3px,0,0) scale(1.02)',offset:.48},{transform:'translate3d(0,0,0) scale(1)'}
   ]:[
-   {transform:'scale(1)'},{transform:`scale(${big?.94:.965})`,offset:.24},{transform:`scale(${big?1.065:1.035})`,offset:.62},{transform:'scale(1)'}
+   {transform:'scale(1)'},{transform:`scale(${big ? .94 : .965})`,offset:.24},{transform:`scale(${big?1.065:1.035})`,offset:.62},{transform:'scale(1)'}
   ];
   el.animate(frames,{duration:kind==='180'?480:big?340:230,easing:'cubic-bezier(.18,.9,.22,1)'});
  });
@@ -208,7 +208,7 @@ function updateVisitInputUI({punch=true}={}){
  const desktop=document.getElementById('visit-desktop');if(desktop&&desktop.value!==state.visitValue)desktop.value=state.visitValue;
  const desktopPreview=document.querySelector('.desktop-preview');if(desktopPreview)desktopPreview.innerHTML=visitPreview();
  document.querySelectorAll('.m-entry-v3 .m-value').forEach(el=>{el.textContent=state.visitValue||'0–180';el.classList.toggle('filled',!!state.visitValue);if(punch)animatePress(el);});
- document.querySelectorAll('.m-entry-v3 .entry-preview').forEach(el=>{el.innerHTML=previewPlayer()?\`<span>ввод для <b>\${esc(activePlayer()?.name||'')}</b></span>\`:visitPreview();});
+ document.querySelectorAll('.m-entry-v3 .entry-preview').forEach(el=>{el.innerHTML=previewPlayer()?`<span>ввод для <b>${esc(activePlayer()?.name||'')}</b></span>`:visitPreview();});
 }
 function keypad(k){
  state.inputError='';
