@@ -7,34 +7,58 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Checkout Lab" />
-
-  <!-- SEO -->
+  <meta name="robots" content="index,follow" />
   <title>Счётчик для дартса 301/501 онлайн — Checkout Lab</title>
   <meta name="description" content="Бесплатный счётчик для дартса 301/501: Double Out, подсказки закрытий, статистика и до 8 игроков. Checkout Lab работает на телефоне и ПК, в том числе офлайн." />
   <link rel="canonical" href="https://checkoutlab.ru/" />
 
-  <!-- Open Graph: Telegram, VK и другие сервисы -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Checkout Lab" />
+  <meta property="og:locale" content="ru_RU" />
   <meta property="og:title" content="Счётчик для дартса 301/501 — Checkout Lab" />
   <meta property="og:description" content="Бесплатный счётчик для дартса с Double Out, подсказками закрытий, статистикой и офлайн-режимом." />
   <meta property="og:url" content="https://checkoutlab.ru/" />
-  <meta property="og:locale" content="ru_RU" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Счётчик для дартса 301/501 — Checkout Lab" />
+  <meta name="twitter:description" content="Double Out, подсказки закрытий, статистика, до 8 игроков и офлайн-режим." />
 
-  <!-- Название сайта для поисковых систем -->
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./favicon-48.png" type="image/png" sizes="48x48" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="stylesheet" href="./styles.css" />
+
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Checkout Lab",
-    "alternateName": "Checkout Lab — счётчик для дартса",
-    "url": "https://checkoutlab.ru/"
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://checkoutlab.ru/#website",
+        "url": "https://checkoutlab.ru/",
+        "name": "Checkout Lab",
+        "alternateName": "CheckoutLab",
+        "inLanguage": "ru-RU"
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://checkoutlab.ru/#app",
+        "name": "Checkout Lab",
+        "url": "https://checkoutlab.ru/",
+        "description": "Бесплатный счётчик для дартса 301/501 с Double Out, подсказками закрытий, статистикой, мультиплеером и офлайн-режимом.",
+        "applicationCategory": "SportsApplication",
+        "operatingSystem": "Any",
+        "isAccessibleForFree": true,
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "RUB"
+        },
+        "isPartOf": {"@id": "https://checkoutlab.ru/#website"}
+      }
+    ]
   }
   </script>
-
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <div id="app"></div>

@@ -1,0 +1,18 @@
+Checkout Lab — SEO update 1.0.4
+
+Что изменено:
+- SEO title/description главной страницы
+- canonical + Open Graph + Twitter metadata
+- WebSite + WebApplication JSON-LD
+- отдельная индексируемая таблица закрытий 2–170
+- внутренняя ссылка на таблицу из десктопного и мобильного меню
+- sitemap.xml: главная + таблица закрытий
+- robots.txt
+- PNG favicon 48x48 для поисковой выдачи
+- PWA icons 192x192 и 512x512
+- test.html закрыт от индексации
+- Service Worker cache обновлён до checkout-lab-1.0.4-seo
+
+ВАЖНО:
+Файл подтверждения Яндекс yandex_*.html в репозитории НЕ удалять.
+После загрузки файлов проверить /, /checkout-table.html, /sitemap.xml и /robots.txt.

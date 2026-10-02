@@ -14,7 +14,9 @@
   <meta property="og:description" content="Маршруты закрытий Double Out от 2 до 170 очков с быстрым поиском по остатку." />
   <meta property="og:url" content="https://checkoutlab.ru/checkout-table.html" />
   <meta property="og:locale" content="ru_RU" />
+  <link rel="icon" href="./favicon-48.png" type="image/png" sizes="48x48" />
   <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
   <link rel="stylesheet" href="./styles.css" />
   <style>
     body{min-height:100vh}
@@ -80,12 +82,24 @@
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
-    "@type":"WebPage",
-    "name":"Таблица закрытий в дартсе 2–170",
-    "description":"Маршруты закрытий Double Out от 2 до 170 очков.",
-    "url":"https://checkoutlab.ru/checkout-table.html",
-    "isPartOf":{"@type":"WebSite","name":"Checkout Lab","url":"https://checkoutlab.ru/"},
-    "inLanguage":"ru-RU"
+    "@graph":[
+      {
+        "@type":"WebPage",
+        "@id":"https://checkoutlab.ru/checkout-table.html#webpage",
+        "name":"Таблица закрытий в дартсе 2–170",
+        "description":"Маршруты закрытий Double Out от 2 до 170 очков с поиском по остатку.",
+        "url":"https://checkoutlab.ru/checkout-table.html",
+        "isPartOf":{"@type":"WebSite","name":"Checkout Lab","url":"https://checkoutlab.ru/"},
+        "inLanguage":"ru-RU"
+      },
+      {
+        "@type":"BreadcrumbList",
+        "itemListElement":[
+          {"@type":"ListItem","position":1,"name":"Checkout Lab","item":"https://checkoutlab.ru/"},
+          {"@type":"ListItem","position":2,"name":"Таблица закрытий 2–170","item":"https://checkoutlab.ru/checkout-table.html"}
+        ]
+      }
+    ]
   }
   </script>
 </head>
