@@ -144,8 +144,15 @@ function save(){
 function load(){
  try{const session=JSON.parse(localStorage.getItem(STORAGE)||'null');if(session?.game?.players){state.game=session.game;state.undo=Array.isArray(session.undo)?session.undo:[];state.redo=Array.isArray(session.redo)?session.redo:[];}else{const legacy=JSON.parse(localStorage.getItem(LEGACY_STORAGE)||'null');if(legacy?.players)state.game=legacy;}}catch{}
  try{const settings=JSON.parse(localStorage.getItem(SETTINGS)||'null');if(settings)Object.assign(state,settings);}catch{}
+ const fixed=document.documentElement?.dataset?.lang;if(fixed==='ru'||fixed==='en')state.language=fixed;
 }
-function setLanguage(language){state.language=language==='en'?'en':'ru';window.CheckoutI18n?.saveLanguage?.(state.language);save();render();}
+function setLanguage(language){
+ const next=language==='en'?'en':'ru';window.CheckoutI18n?.saveLanguage?.(next);
+ const isEnglish=location.pathname==='/en/'||location.pathname.endsWith('/en/index.html');
+ if(next==='en'&&!isEnglish){location.href='/en/';return;}
+ if(next==='ru'&&isEnglish){location.href='/';return;}
+ state.language=next;save();render();
+}
 function snapshot(){if(!state.game)return;state.undo.push(clone(state.game));if(state.undo.length>40)state.undo.shift();state.redo=[];}
 function activePlayer(){return state.game?.players[state.game.active]||null;}
 function previewPlayer(){return state.previewPlayerId?state.game?.players.find(p=>p.id===state.previewPlayerId)||null:null;}
