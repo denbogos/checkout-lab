@@ -43,6 +43,8 @@ const exact={
 };
 
 function detect(){
+ const fixed=document.documentElement?.dataset?.lang;
+ if(fixed==='ru'||fixed==='en')return fixed;
  try{
   const saved=JSON.parse(localStorage.getItem(SETTINGS)||'null')?.language;
   if(saved==='ru'||saved==='en')return saved;
