@@ -80,7 +80,7 @@ function tr(s){
  const clean=s.trim();
  if(exact[clean])return exact[clean];
  const direct=dynamic(clean);if(direct!==clean)return direct;
- const prefixed=clean.match(/^([＋◉▤▥⛶🔊🔇○☀☾↻↩×◷]\s*)(.+)$/);
+ const prefixed=clean.match(/^(\S+\s+)(.+)$/);
  if(prefixed){const translated=exact[prefixed[2]]||dynamic(prefixed[2]);if(translated!==prefixed[2])return prefixed[1]+translated;}
  return clean;
 }
