@@ -124,26 +124,8 @@ create policy profiles_update_self on public.profiles for update to authenticate
 create policy friendships_read_party on public.friendships for select to authenticated
   using ((select auth.uid()) in (requester_id,addressee_id));
 
-create policy matches_read on public.matches for select to authenticated using (
-  visibility = 'public'
-  or created_by = (select auth.uid())
-  or exists (select 1 from public.match_players mp where mp.match_id=id and mp.user_id=(select auth.uid()))
-  or exists (select 1 from public.spectators s where s.match_id=id and s.user_id=(select auth.uid()))
-);
-create policy match_players_read on public.match_players for select to authenticated using (
-  exists (select 1 from public.matches m where m.id=match_id and (
-    m.visibility='public' or m.created_by=(select auth.uid())
-    or exists (select 1 from public.match_players me where me.match_id=m.id and me.user_id=(select auth.uid()))
-    or exists (select 1 from public.spectators s where s.match_id=m.id and s.user_id=(select auth.uid()))
-  ))
-);
-create policy visits_read on public.visits for select to authenticated using (
-  exists (select 1 from public.matches m where m.id=match_id and (
-    m.visibility='public' or m.created_by=(select auth.uid())
-    or exists (select 1 from public.match_players me where me.match_id=m.id and me.user_id=(select auth.uid()))
-    or exists (select 1 from public.spectators s where s.match_id=m.id and s.user_id=(select auth.uid()))
-  ))
-);
+-- Match-related read policies are installed after private authorization helpers below.
+
 create policy invitations_read_party on public.match_invitations for select to authenticated
   using ((select auth.uid()) in (sender_id,recipient_id));
 create policy spectators_read_self on public.spectators for select to authenticated
@@ -178,6 +160,27 @@ as $$ select exists(select 1 from public.match_players where match_id=p_match an
 revoke execute on function private.is_match_player(uuid,uuid) from public, anon;
 grant execute on function private.is_match_player(uuid,uuid) to authenticated;
 
+create or replace function private.can_view_match(p_match uuid, p_user uuid)
+returns boolean language sql stable security definer set search_path=''
+as $
+  select exists(
+    select 1 from public.matches m where m.id=p_match and (
+      m.visibility='public' or m.created_by=p_user
+      or exists(select 1 from public.match_players mp where mp.match_id=p_match and mp.user_id=p_user)
+      or exists(select 1 from public.spectators s where s.match_id=p_match and s.user_id=p_user)
+    )
+  )
+$;
+revoke execute on function private.can_view_match(uuid,uuid) from public, anon;
+grant execute on function private.can_view_match(uuid,uuid) to authenticated;
+
+create policy matches_read on public.matches for select to authenticated
+  using ((select private.can_view_match(id,(select auth.uid()))));
+create policy match_players_read on public.match_players for select to authenticated
+  using ((select private.can_view_match(match_id,(select auth.uid()))));
+create policy visits_read on public.visits for select to authenticated
+  using ((select private.can_view_match(match_id,(select auth.uid()))));
+
 -- Create a 2-player room. The creator is seat 1.
 create or replace function public.create_online_match(
   p_game_type smallint default 501,
@@ -196,7 +199,7 @@ begin
   if p_game_type not in (301,501) then raise exception 'Invalid game type'; end if;
   if p_legs_to_win < 1 or p_legs_to_win > 25 then raise exception 'Invalid legs target'; end if;
   loop
-    code := upper(substr(encode(gen_random_bytes(6),'hex'),1,6));
+    code := upper(substr(encode(public.gen_random_bytes(6),'hex'),1,6));
     exit when not exists(select 1 from public.matches where room_code=code);
   end loop;
   insert into public.matches(room_code,created_by,game_type,double_out,legs_to_win,visibility,current_player_id)
