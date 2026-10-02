@@ -11,7 +11,7 @@ const exact={
 'Добавь игроков':'Add players','От одного до восьми':'One to eight players','Добавить игрока':'Add player','Легов для победы':'Legs to win','⚙ Double Out · Bull разрешён':'⚙ Double Out · Bull allowed','НАЧАТЬ МАТЧ':'START MATCH',
 'Игрок':'Player','Соперник':'Opponent','ИГРОКИ':'PLAYERS','НАЖМИ ДЛЯ ВЫХОДА':'TAP FOR CHECKOUT','Текущий ход':'Current turn','Показать выход на закрытие':'Show checkout route','ХОД':'TURN','ПРОСМОТР':'PREVIEW','ОЧЕРЕДЬ':'UP NEXT','СЛЕДУЮЩИЙ':'NEXT',
 'ВЫХОД ИГРОКА':'PLAYER CHECKOUT','ВЫХОД НА ЗАКРЫТИЕ':'CHECKOUT','ЗАКРЫТИЯ НЕТ':'NO CHECKOUT','ПОДГОТОВКА':'SETUP','Набирай максимум':'Score maximum','ПОСЛЕДНИЙ':'LAST','Матч только начался':'Match just started','История ›':'History ›',
-'СУММА ПОДХОДА':'VISIT SCORE','Введите сумму подхода':'Enter visit score','Записать подход':'Submit visit','введите сумму':'enter score','подтвердить':'confirm','отменить':'undo','вернуть':'redo','Сейчас бросает':'Now throwing',
+'СУММА ПОДХОДА':'VISIT SCORE','Введите сумму подхода':'Enter visit score','ввод для':'input for','Записать подход':'Submit visit','введите сумму':'enter score','подтвердить':'confirm','отменить':'undo','вернуть':'redo','Сейчас бросает':'Now throwing',
 'ВВОД ПОДХОДА':'VISIT INPUT','Введите сумму':'Enter score','ОСТАЛОСЬ':'REMAINING','СЧЁТ ИГРОКА':'PLAYER SCORE','СЕЙЧАС БРОСАЕТ':'NOW THROWING','3 ДРОТИКА':'3 DARTS','3 ДРОТИКА · ВЫХОД':'3 DARTS · CHECKOUT','3 ДРОТИКА · ПРОСМОТР':'3 DARTS · PREVIEW',
 'BUST — счёт не изменится':'BUST — score stays unchanged','ЗАКРЫТИЕ · выберите последнее удвоение':'CHECKOUT · choose the finishing double','останется':'remaining',
 'Последние подходы':'Recent visits','ИСТОРИЯ МАТЧА':'MATCH HISTORY','Подходов пока нет':'No visits yet','Изменить последний подход':'Edit last visit','Отменить последний подход':'Undo last visit','Вернуть подход':'Redo visit',
@@ -69,11 +69,18 @@ function dynamic(s){
  if((m=s.match(/^ХОД · (.+)$/)))return `TURN · ${m[1]}`;
  if((m=s.match(/^ПРОСМОТР · (.+)$/)))return `PREVIEW · ${m[1]}`;
  if((m=s.match(/^Ничего не найдено$/)))return 'Nothing found';
+ if((m=s.match(/^Звук: (вкл|выкл)$/)))return `Sound: ${m[1]==='вкл'?'on':'off'}`;
+ if((m=s.match(/^Вибрация: (вкл|выкл)$/)))return `Vibration: ${m[1]==='вкл'?'on':'off'}`;
+ if((m=s.match(/^Экран не гаснет: (да|нет)$/)))return `Keep screen awake: ${m[1]==='да'?'yes':'no'}`;
  return s;
 }
 function tr(s){
  const clean=s.trim();
- return exact[clean]||dynamic(clean);
+ if(exact[clean])return exact[clean];
+ const direct=dynamic(clean);if(direct!==clean)return direct;
+ const prefixed=clean.match(/^([＋◉▤▥⛶🔊🔇○☀☾↻↩]\s*)(.+)$/);
+ if(prefixed){const translated=exact[prefixed[2]]||dynamic(prefixed[2]);if(translated!==prefixed[2])return prefixed[1]+translated;}
+ return clean;
 }
 function apply(root=document,language=detect()){
  document.documentElement.lang=language==='en'?'en':'ru';
