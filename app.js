@@ -25,16 +25,66 @@ const finishers=ALL.filter(h=>h.isDouble);
 const playable=ALL.filter(h=>h.label!=='MISS');
 const POSSIBLE_VISIT_TOTALS=(()=>{const set=new Set();for(const a of ALL)for(const b of ALL)for(const c of ALL)set.add(a.value+b.value+c.value);return set;})();
 let wakeLockSentinel=null;
-let audioContext=null;
+
+function motionReduced(){return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches===true;}
+function playSound(kind='score'){if(state.sound)window.CheckoutAudio?.play(kind);}
+function haptic(kind='score'){
+ if(!state.vibration||!navigator.vibrate)return;
+ const patterns={tap:8,back:10,confirm:14,score:12,double:[10,18,14],treble:[9,14,9],bull:[14,20,26],bust:55,'180':[16,22,16,22,46],leg:[18,28,62],match:[20,28,35,30,82]};
+ try{navigator.vibrate(patterns[kind]??12);}catch{}
+}
+function animatePress(el,strong=false){
+ if(!el||motionReduced()||!el.animate)return;
+ el.getAnimations?.().forEach(a=>a.cancel());
+ el.animate([
+  {transform:'translate3d(0,0,0) scale(1)'},
+  {transform:`translate3d(0,${strong?2:1}px,0) scale(${strong?.955:.972})`,offset:.34},
+  {transform:'translate3d(0,0,0) scale(1.018)',offset:.72},
+  {transform:'translate3d(0,0,0) scale(1)'}
+ ],{duration:strong?220:150,easing:'cubic-bezier(.2,.85,.25,1)'});
+}
+function punchScore(kind='score'){
+ if(motionReduced())return;
+ const big=kind==='180'||kind==='leg'||kind==='match'||kind==='bust';
+ document.querySelectorAll('.score-ring>strong,.m-hero>strong').forEach(el=>{
+  if(!el.animate)return;el.getAnimations?.().forEach(a=>a.cancel());
+  const frames=kind==='180'?[
+   {transform:'scale(1)'},{transform:'scale(.90)',offset:.16},{transform:'scale(1.105)',offset:.43},{transform:'scale(.985)',offset:.72},{transform:'scale(1)'}
+  ]:kind==='bust'?[
+   {transform:'translate3d(0,0,0) scale(1)'},{transform:'translate3d(-3px,0,0) scale(.97)',offset:.22},{transform:'translate3d(3px,0,0) scale(1.02)',offset:.48},{transform:'translate3d(0,0,0) scale(1)'}
+  ]:[
+   {transform:'scale(1)'},{transform:`scale(${big?.94:.965})`,offset:.24},{transform:`scale(${big?1.065:1.035})`,offset:.62},{transform:'scale(1)'}
+  ];
+  el.animate(frames,{duration:kind==='180'?480:big?340:230,easing:'cubic-bezier(.18,.9,.22,1)'});
+ });
+ if(big)document.querySelectorAll('.score-stage,.m-hero').forEach(stage=>{
+  if(!stage.animate)return;
+  const frames=kind==='bust'?[
+   {transform:'translate3d(0,0,0)'},{transform:'translate3d(-3px,0,0)'},{transform:'translate3d(3px,0,0)'},{transform:'translate3d(-2px,0,0)'},{transform:'translate3d(0,0,0)'}
+  ]:[
+   {transform:'translate3d(0,0,0)'},{transform:'translate3d(-2px,1px,0)'},{transform:'translate3d(3px,-1px,0)'},{transform:'translate3d(0,0,0)'}
+  ];
+  stage.animate(frames,{duration:kind==='180'?190:160,easing:'ease-out'});
+ });
+}
+function runMomentMotion(kind){
+ requestAnimationFrame(()=>{
+  punchScore(kind);
+  const moment=document.querySelector('.game-moment');
+  if(moment&&!motionReduced()&&moment.animate){
+   moment.animate([
+    {filter:'brightness(1)',textShadow:'0 10px 50px rgb(0 0 0/.55)'},
+    {filter:'brightness(1.35)',textShadow:'0 0 28px currentColor,0 12px 55px rgb(0 0 0/.58)',offset:.28},
+    {filter:'brightness(1)',textShadow:'0 10px 50px rgb(0 0 0/.55)'}
+   ],{duration:620,easing:'ease-out'});
+  }
+ });
+}
 function isPossibleVisitTotal(v){return Number.isInteger(v)&&v>=0&&v<=180&&POSSIBLE_VISIT_TOTALS.has(v);}
 function prefixReachable(total,maxDarts=2){if(total===0)return true;if(total<0)return false;for(const a of ALL){if(a.value===total)return true;if(maxDarts>=2)for(const b of ALL)if(a.value+b.value===total)return true;}return false;}
 function validFinishDoubles(total){const preferred=(canonical[total]||[]).at(-1);return finishers.filter(f=>prefixReachable(total-f.value,2)).sort((a,b)=>{if(a.label===preferred)return -1;if(b.label===preferred)return 1;const ai=preferredDoubles.indexOf(a.label),bi=preferredDoubles.indexOf(b.label);return (ai<0?99:ai)-(bi<0?99:bi);});}
 function validCheckoutDartCounts(total,doubleLabel){const d=byLabel[doubleLabel];if(!d?.isDouble)return[];const rest=total-d.value,out=[];if(rest===0)out.push(1);if(rest>=0&&ALL.some(a=>a.value===rest))out.push(2);if(rest>=0&&ALL.some(a=>ALL.some(b=>a.value+b.value===rest)))out.push(3);return [...new Set(out)];}
-function playSound(kind='score'){
- if(!state.sound)return;
- try{audioContext=audioContext||new (window.AudioContext||window.webkitAudioContext)();const now=audioContext.currentTime;const tones=kind==='180'?[[880,.08],[1175,.09],[1568,.14]]:kind==='leg'?[[660,.09],[880,.1],[1320,.18]]:kind==='bust'?[[180,.13],[145,.18]]:[[520,.055]];let t=now;for(const [freq,dur] of tones){const o=audioContext.createOscillator(),g=audioContext.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.055,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(audioContext.destination);o.start(t);o.stop(t+dur+.02);t+=dur*.72;}}catch{}
-}
-function haptic(kind='score'){if(!state.vibration||!navigator.vibrate)return;try{navigator.vibrate(kind==='180'?[35,30,35,30,70]:kind==='leg'?[50,35,90]:kind==='bust'?[90]:[25]);}catch{}}
+
 async function syncWakeLock(){
  const should=state.wakeLock&&state.screen==='game'&&!!state.game&&!state.game.winner&&document.visibilityState==='visible';
  if(!should){if(wakeLockSentinel){try{await wakeLockSentinel.release();}catch{}wakeLockSentinel=null;}return;}
@@ -123,14 +173,15 @@ function finishVisit(hits,forcedBust=false,dartCount=hits.length){
  snapshot();const total=hits.reduce((sum,h)=>sum+h.value,0),left=p.score-total,last=hits[hits.length-1];
  const checkout=left===0&&last.isDouble&&!forcedBust,bust=forcedBust||left<0||left===1||(left===0&&!last.isDouble);
  const next=clone(g);applyRecordedVisit(next,{playerId:p.id,start:p.score,hits,total,bust,checkout,dartCount});state.game=next;state.visitValue='';state.inputError='';state.previewPlayerId=null;
- const kind=bust?'bust':checkout?'leg':total===180?'180':'score';state.moment=bust?{label:'BUST',tone:'bust',at:Date.now()}:checkout?{label:next.winner?'МАТЧ!':'LEG!',tone:'leg',at:Date.now()}:total===180?{label:'180!',tone:'max',at:Date.now()}:null;
- playSound(kind);haptic(kind);save();render();
+ const kind=bust?'bust':checkout?(next.winner?'match':'leg'):total===180?'180':'score';state.moment=bust?{label:'BUST',tone:'bust',at:Date.now()}:checkout?{label:next.winner?'МАТЧ!':'LEG!',tone:'leg',at:Date.now()}:total===180?{label:'180!',tone:'max',at:Date.now()}:null;
+ playSound(kind);haptic(kind);save();render();runMomentMotion(kind);
  if(state.moment){const stamp=state.moment.at;setTimeout(()=>{if(state.moment?.at===stamp){state.moment=null;render();}},900);}
 }
 function addDart(h){
  const g=state.game,p=activePlayer();if(!g||!p||g.winner)return;const hits=[...g.current,h],left=p.score-hits.reduce((sum,x)=>sum+x.value,0),bad=left===0&&!h.isDouble;
  if(left<0||left===1||bad)return finishVisit(hits,true);if(left===0||hits.length===3)return finishVisit(hits);
- snapshot();g.current=hits;save();render();
+ const kind=h.label==='BULL'?'bull':h.isTreble?'treble':h.isDouble?'double':'tap';playSound(kind);haptic(kind);
+ snapshot();g.current=hits;save();render();runMomentMotion('score');
 }
 function requestVisitSubmit(){
  const now=Date.now();if(now-state.lastSubmitAt<300)return;const value=Number(state.visitValue),g=state.game,p=activePlayer();if(!g||!p||state.visitValue===''||!Number.isInteger(value)||value<0||value>180)return;
@@ -153,11 +204,20 @@ function applyEditedLastVisit(){
  const history=state.game.history.slice(0,-1),base=rebuildGame(history);if(!base)return;const p=base.players[base.active],left=p.score-value;let finish='';if(left===0){const valid=validFinishDoubles(value).map(d=>d.label);if(!valid.length)return;if(!valid.includes(state.editLastDouble))state.editLastDouble=valid[0];finish=state.editLastDouble;}
  snapshot();const checkout=left===0&&!!finish,bust=left<0||left===1||(left===0&&!finish),h={label:`Σ${value}${finish?` · ${finish}`:''}`,value,multiplier:finish?2:1,number:value,isDouble:!!finish,isTreble:false,finishLabel:finish||undefined};applyRecordedVisit(base,{playerId:p.id,start:p.score,hits:[h],total:value,bust,checkout,dartCount:checkout?Number(state.editLastDarts)||3:3});state.game=base;state.editLastOpen=false;state.visitValue='';state.inputError='';save();render();
 }
-function keypad(k){
- state.inputError='';if(k==='back')state.visitValue=state.visitValue.slice(0,-1);else if(k==='ok')return requestVisitSubmit();else if(/^\d$/.test(k)){const next=(state.visitValue+k).replace(/^0+(?=\d)/,'');if(Number(next)<=180&&next.length<=3)state.visitValue=next;}
- render();
+function updateVisitInputUI({punch=true}={}){
+ const desktop=document.getElementById('visit-desktop');if(desktop&&desktop.value!==state.visitValue)desktop.value=state.visitValue;
+ const desktopPreview=document.querySelector('.desktop-preview');if(desktopPreview)desktopPreview.innerHTML=visitPreview();
+ document.querySelectorAll('.m-entry-v3 .m-value').forEach(el=>{el.textContent=state.visitValue||'0–180';el.classList.toggle('filled',!!state.visitValue);if(punch)animatePress(el);});
+ document.querySelectorAll('.m-entry-v3 .entry-preview').forEach(el=>{el.innerHTML=previewPlayer()?\`<span>ввод для <b>\${esc(activePlayer()?.name||'')}</b></span>\`:visitPreview();});
 }
-function quick(v){state.visitValue=String(v);state.inputError='';render();}
+function keypad(k){
+ state.inputError='';
+ if(k==='ok'){playSound('confirm');haptic('confirm');return requestVisitSubmit();}
+ if(k==='back'){state.visitValue=state.visitValue.slice(0,-1);playSound('back');haptic('back');}
+ else if(/^\d$/.test(k)){const next=(state.visitValue+k).replace(/^0+(?=\d)/,'');if(Number(next)<=180&&next.length<=3){state.visitValue=next;playSound('tap');haptic('tap');}}
+ updateVisitInputUI();
+}
+function quick(v){state.visitValue=String(v);state.inputError='';playSound('tap');haptic('tap');updateVisitInputUI();}
 function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 
 const I={target:'◎',plus:'＋',game:'◉',book:'▤',stats:'▥',sun:'☀',moon:'☾',undo:'↶',redo:'↷',menu:'☰',close:'×',back:'⌫'};
@@ -191,7 +251,7 @@ function gameView(){if(!state.game)return `<section class="empty-state"><div>◎
 function checkoutTable(){const q=Number(state.search),scores=Array.from({length:110},(_,i)=>170-i).filter(s=>!state.search||s===q);return `<section class="table-page"><div class="page-heading"><span class="kicker">61—170</span><h1>Таблица закрытий</h1><p>Основной маршрут и запасные варианты. Утроения готовят, удвоения закрывают.</p><input id="checkout-search" inputmode="numeric" placeholder="Найти остаток" value="${esc(state.search)}"></div><div class="legend"><span><i class="t"></i> утроение</span><span><i class="d"></i> удвоение</span><span><i class="b"></i> Bull</span></div><div class="checkout-grid">${scores.map(score=>{const rs=checkoutRoutes(score,3,3),bad=BOGEY.has(score)||!rs.length;return `<article class="checkout-card ${bad?'impossible':''}"><div class="checkout-number">${score}</div>${bad?'<div><strong>Нет закрытия</strong><small>Подготовь следующий подход</small></div>':`<div class="routes">${rs.map((r,i)=>`<div class="${i?'alt-route':'main-route'}"><small>${i?'ВАРИАНТ':'ОСНОВНОЙ'}</small><span>${r.map(h=>`<b class="${h.isTreble?'treble':h.isDouble?'double':h.label==='BULL'?'bull-hit':''}">${h.label}</b>`).join('')}</span></div>`).join('')}</div>`}</article>`;}).join('')}</div></section>`;}
 function statsView(){const g=state.game;if(!g)return `<section class="empty-state"><div>◎</div><h1>Нет статистики</h1><p>Сначала начни матч.</p><button class="primary" data-nav="setup">Новая игра</button></section>`;return `<section class="stats-page"><div class="page-heading"><span class="kicker">ТЕКУЩИЙ МАТЧ</span><h1>Статистика</h1></div><div class="stats-grid">${g.players.map(p=>`<article class="stat-card panel" style="--player:${p.color}"><span class="player-bar"></span><h2>${esc(p.name)}</h2><strong>${p.darts?(p.total/p.darts*3).toFixed(2):'0.00'}<small>средний набор</small></strong><div><span><b>${p.high}</b>лучший подход</span><span><b>${p.darts}</b>дротиков</span><span><b>${p.wins}</b>легов</span><span><b>${g.history.filter(v=>v.playerId===p.id&&v.total===180&&!v.bust).length}</b>180</span></div></article>`).join('')}</div></section>`;}
 function confirmModal(){if(!state.checkoutConfirm)return'';const d=state.checkoutConfirm;return `<div class="modal-backdrop"><div class="checkout-modal panel checkout-double-modal"><span class="kicker">DOUBLE OUT</span><h2>Чем закрыли ${d.value}?</h2><p>Выберите последнее удвоение. Оно сохранится в истории и статистике матча.</p><div class="double-grid">${d.doubles.map((label,i)=>`<button class="double-choice ${label===d.selected?'recommended':''}" data-select-double="${label}"><b>${label}</b>${i===0?'<small>РЕКОМЕНДУЕТСЯ</small>':''}</button>`).join('')}</div><div class="checkout-darts-label">ДРОТИКОВ В ЗАКРЫТИИ</div><div class="checkout-darts">${validCheckoutDartCounts(d.value,d.selected).map(n=>`<button class="${Number(d.darts)===n?'active':''}" data-checkout-darts="${n}">${n}</button>`).join('')}</div><button class="confirm-selected-double">ЗАКРЫТО · ${d.selected}</button><button class="confirm-bust">Не закрыли — BUST</button><button class="cancel-confirm">Отмена</button></div></div>`;}
-function settingsPanel(){if(!state.settingsOpen)return'';const wakeSupported='wakeLock' in navigator;return `<div class="modal-backdrop settings-backdrop"><section class="settings-panel panel"><div class="settings-head"><div><span class="kicker">CHECKOUT LAB 1.0</span><h2>Настройки матча</h2></div><button class="close-settings">×</button></div><button class="setting-row sound-toggle"><span><b>Звук событий</b><small>Подход, 180, BUST, LEG</small></span><em>${state.sound?'ВКЛ':'ВЫКЛ'}</em></button><button class="setting-row vibration-toggle"><span><b>Вибрация</b><small>Короткий отклик на телефоне</small></span><em>${state.vibration?'ВКЛ':'ВЫКЛ'}</em></button><button class="setting-row wake-toggle"><span><b>Экран не гаснет</b><small>${wakeSupported?'Активно во время матча':'Не поддерживается браузером'}</small></span><em>${state.wakeLock?'ВКЛ':'ВЫКЛ'}</em></button>${state.game?'<button class="setting-row focus-toggle"><span><b>Режим у мишени</b><small>Полный экран, минимум браузерных элементов</small></span><em>⛶</em></button>':''}</section></div>`;}
+function settingsPanel(){if(!state.settingsOpen)return'';const wakeSupported='wakeLock' in navigator;return `<div class="modal-backdrop settings-backdrop"><section class="settings-panel panel"><div class="settings-head"><div><span class="kicker">CHECKOUT LAB 1.0</span><h2>Настройки матча</h2></div><button class="close-settings">×</button></div><button class="setting-row sound-toggle"><span><b>Звук интерфейса</b><small>Нажатия, броски, 180, BUST, LEG</small></span><em>${state.sound?'ВКЛ':'ВЫКЛ'}</em></button><button class="setting-row vibration-toggle"><span><b>Вибрация</b><small>Короткий отклик на телефоне</small></span><em>${state.vibration?'ВКЛ':'ВЫКЛ'}</em></button><button class="setting-row wake-toggle"><span><b>Экран не гаснет</b><small>${wakeSupported?'Активно во время матча':'Не поддерживается браузером'}</small></span><em>${state.wakeLock?'ВКЛ':'ВЫКЛ'}</em></button>${state.game?'<button class="setting-row focus-toggle"><span><b>Режим у мишени</b><small>Полный экран, минимум браузерных элементов</small></span><em>⛶</em></button>':''}</section></div>`;}
 function editLastModal(){if(!state.editLastOpen||!state.game?.history.length)return'';const base=rebuildGame(state.game.history.slice(0,-1)),p=base?.players[base.active],v=Number(state.editLastValue||0),left=p?p.score-v:null,valid=left===0?validFinishDoubles(v):[];if(left===0&&valid.length&&!valid.some(d=>d.label===state.editLastDouble))state.editLastDouble=valid[0].label;const editCounts=left===0&&state.editLastDouble?validCheckoutDartCounts(v,state.editLastDouble):[];if(editCounts.length&&!editCounts.includes(Number(state.editLastDarts)))state.editLastDarts=editCounts[0];return `<div class="modal-backdrop"><div class="checkout-modal panel edit-visit-modal"><span class="kicker">ПОСЛЕДНИЙ ПОДХОД</span><h2>Исправить результат</h2><p>${p?`${esc(p.name)} · было ${state.game.history.at(-1).total}`:''}</p><input id="edit-last-value" inputmode="numeric" maxlength="3" value="${esc(state.editLastValue)}" aria-label="Новая сумма">${!isPossibleVisitTotal(v)?`<div class="edit-error">${v} нельзя набрать за 3 дротика</div>`:''}${left===0&&valid.length?`<div class="edit-double-label">Последнее удвоение</div><div class="double-grid compact">${valid.map((d,i)=>`<button class="edit-double-choice ${d.label===state.editLastDouble?'recommended':''}" data-edit-double="${d.label}">${d.label}${i===0?'<small>РЕК.</small>':''}</button>`).join('')}</div><div class="checkout-darts-label">ДРОТИКОВ В ЗАКРЫТИИ</div><div class="checkout-darts">${editCounts.map(n=>`<button class="${Number(state.editLastDarts)===n?'active':''}" data-edit-darts="${n}">${n}</button>`).join('')}</div>`:''}<button class="save-edit" ${!isPossibleVisitTotal(v)?'disabled':''}>Сохранить</button><button class="delete-last">Удалить подход</button><button class="cancel-edit">Отмена</button></div></div>`;}
 
 
@@ -220,13 +280,13 @@ function bind(){
  document.querySelector('.clear-current')?.addEventListener('click',()=>{if(!state.game?.current.length)return;snapshot();state.game.current.pop();save();render();});
  document.querySelectorAll('.undo,.undo-mobile').forEach(el=>el.onclick=undo);document.querySelectorAll('.redo,.redo-mobile').forEach(el=>el.onclick=redo);
  document.querySelectorAll('[data-preview-player]').forEach(el=>{const select=()=>{const id=el.dataset.previewPlayer;const active=activePlayer();state.previewPlayerId=active?.id===id?null:(state.previewPlayerId===id?null:id);render();};el.onclick=select;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select();}};});document.querySelectorAll('.clear-preview').forEach(el=>el.onclick=()=>{state.previewPlayerId=null;render();});
- const vi=document.getElementById('visit-desktop');if(vi){vi.oninput=e=>{let v=e.target.value.replace(/\D/g,'').slice(0,3);if(Number(v)>180)v='180';state.visitValue=v;state.inputError='';e.target.value=v;const preview=document.querySelector('.desktop-preview');if(preview)preview.innerHTML=visitPreview();const submit=document.querySelector('.desktop-submit');if(submit)submit.disabled=v==='';};vi.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();requestVisitSubmit();}else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();}};setTimeout(()=>vi.focus({preventScroll:true}),0);}
+ const vi=document.getElementById('visit-desktop');if(vi){vi.oninput=e=>{let v=e.target.value.replace(/\D/g,'').slice(0,3);if(Number(v)>180)v='180';state.visitValue=v;state.inputError='';e.target.value=v;const preview=document.querySelector('.desktop-preview');if(preview)preview.innerHTML=visitPreview();const submit=document.querySelector('.desktop-submit');if(submit)submit.disabled=v==='';playSound('tap');animatePress(document.querySelector('.desktop-score-box'));};vi.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();playSound('confirm');haptic('confirm');requestVisitSubmit();}else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();}};setTimeout(()=>vi.focus({preventScroll:true}),0);}
  document.querySelector('.submit-visit')?.addEventListener('click',requestVisitSubmit);
- document.querySelectorAll('[data-key]').forEach(el=>el.onclick=()=>keypad(el.dataset.key));document.querySelectorAll('[data-quick]').forEach(el=>el.onclick=()=>quick(el.dataset.quick));
+ document.querySelectorAll('[data-key]').forEach(el=>el.onclick=()=>{animatePress(el,el.dataset.key==='ok');keypad(el.dataset.key);});document.querySelectorAll('[data-quick]').forEach(el=>el.onclick=()=>{animatePress(el);quick(el.dataset.quick);});
  document.querySelector('.open-history')?.addEventListener('click',()=>{state.historyOpen=true;render();});document.querySelectorAll('.close-history').forEach(el=>el.addEventListener('click',()=>{state.historyOpen=false;render();}));
  document.querySelectorAll('.play-again').forEach(el=>el.onclick=startGame);
  document.querySelectorAll('[data-select-double]').forEach(el=>el.onclick=()=>{state.checkoutConfirm.selected=el.dataset.selectDouble;const counts=validCheckoutDartCounts(state.checkoutConfirm.value,state.checkoutConfirm.selected);state.checkoutConfirm.darts=counts[0]||3;render();});document.querySelectorAll('[data-checkout-darts]').forEach(el=>el.onclick=()=>{state.checkoutConfirm.darts=Number(el.dataset.checkoutDarts);render();});document.querySelector('.confirm-selected-double')?.addEventListener('click',()=>confirmCheckout(state.checkoutConfirm.selected));document.querySelector('.confirm-bust')?.addEventListener('click',()=>{const value=state.checkoutConfirm?.value;if(value==null)return;state.checkoutConfirm=null;finishVisit([{label:`Σ${value}`,value,multiplier:1,number:value,isDouble:false,isTreble:false}],true,3);});document.querySelector('.cancel-confirm')?.addEventListener('click',cancelCheckout);document.querySelectorAll('[data-edit-last]').forEach(el=>el.onclick=openEditLast);document.querySelector('.cancel-edit')?.addEventListener('click',()=>{state.editLastOpen=false;state.inputError='';render();});document.querySelector('.delete-last')?.addEventListener('click',deleteLastVisit);document.querySelector('.save-edit')?.addEventListener('click',applyEditedLastVisit);document.querySelectorAll('[data-edit-double]').forEach(el=>el.onclick=()=>{state.editLastDouble=el.dataset.editDouble;const counts=validCheckoutDartCounts(Number(state.editLastValue),state.editLastDouble);state.editLastDarts=counts[0]||3;render();});document.querySelectorAll('[data-edit-darts]').forEach(el=>el.onclick=()=>{state.editLastDarts=Number(el.dataset.editDarts);render();});const editInput=document.getElementById('edit-last-value');if(editInput){editInput.oninput=e=>{let v=e.target.value.replace(/\D/g,'').slice(0,3);if(Number(v)>180)v='180';state.editLastValue=v;render();};setTimeout(()=>document.getElementById('edit-last-value')?.focus(),0);}
- document.onkeydown=e=>{if(state.screen!=='game'||window.matchMedia?.('(max-width:768px)').matches||state.checkoutConfirm!==null)return;const input=document.getElementById('visit-desktop');if(!input)return;if(document.activeElement!==input){if(/^\d$/.test(e.key)){e.preventDefault();input.focus();const next=(state.visitValue+e.key).replace(/^0+(?=\d)/,'').slice(0,3);if(Number(next)<=180){state.visitValue=next;input.value=next;input.dispatchEvent(new Event('input',{bubbles:true}));}}else if(e.key==='Enter'&&state.visitValue!==''){e.preventDefault();requestVisitSubmit();}else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();}else if(e.key==='Escape'&&state.focusMode){e.preventDefault();toggleFocusMode();}}};
+ document.onkeydown=e=>{if(state.screen!=='game'||window.matchMedia?.('(max-width:768px)').matches||state.checkoutConfirm!==null)return;const input=document.getElementById('visit-desktop');if(!input)return;if(document.activeElement!==input){if(/^\d$/.test(e.key)){e.preventDefault();input.focus();const next=(state.visitValue+e.key).replace(/^0+(?=\d)/,'').slice(0,3);if(Number(next)<=180){state.visitValue=next;input.value=next;input.dispatchEvent(new Event('input',{bubbles:true}));}}else if(e.key==='Enter'&&state.visitValue!==''){e.preventDefault();playSound('confirm');haptic('confirm');requestVisitSubmit();}else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();}else if(e.key==='Escape'&&state.focusMode){e.preventDefault();toggleFocusMode();}}};
  const search=document.getElementById('checkout-search');if(search)search.oninput=e=>{state.search=e.target.value.replace(/\D/g,'').slice(0,3);render();setTimeout(()=>document.getElementById('checkout-search')?.focus(),0);};
 }
 
