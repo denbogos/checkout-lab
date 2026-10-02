@@ -336,3 +336,169 @@ body.focus-mode .topbar{display:none}body.focus-mode .desktop-v5.game-layout{hei
 @media(prefers-reduced-motion:reduce){
   .game-moment{animation-duration:.01ms!important;animation-iteration-count:1!important}
 }
+
+
+/* =========================================================
+   Checkout Lab — Juicy UI v1
+   Tactile instrument surfaces + compositor-friendly feedback.
+   ========================================================= */
+html[data-theme="dark"]{
+ --instrument-top:#20282c;
+ --instrument-bottom:#151a1d;
+ --instrument-line:rgba(255,255,255,.085);
+ --instrument-hi:rgba(255,255,255,.075);
+ --instrument-shadow:rgba(0,0,0,.38);
+}
+
+html[data-theme="dark"] .keypad button,
+html[data-theme="dark"] .quick-row button,
+html[data-theme="dark"] .icon-only,
+html[data-theme="dark"] .double-choice,
+html[data-theme="dark"] .checkout-darts button{
+ position:relative;
+ background:
+  linear-gradient(180deg,rgba(255,255,255,.050) 0%,rgba(255,255,255,.014) 20%,rgba(0,0,0,.065) 100%),
+  linear-gradient(180deg,var(--instrument-top),var(--instrument-bottom));
+ border-color:var(--instrument-line);
+ box-shadow:
+  0 7px 16px var(--instrument-shadow),
+  0 2px 4px rgba(0,0,0,.26),
+  inset 0 1px 0 var(--instrument-hi),
+  inset 0 -2px 0 rgba(0,0,0,.28);
+ text-shadow:0 1px 0 rgba(0,0,0,.42);
+ transform:translate3d(0,0,0);
+ transition:transform 70ms ease-out,border-color 120ms ease,background 120ms ease,box-shadow 120ms ease,filter 120ms ease;
+ -webkit-tap-highlight-color:transparent;
+ touch-action:manipulation;
+}
+
+html[data-theme="dark"] .keypad button:hover,
+html[data-theme="dark"] .quick-row button:hover,
+html[data-theme="dark"] .icon-only:hover{
+ border-color:rgba(255,255,255,.145);
+ filter:brightness(1.035);
+}
+
+html[data-theme="dark"] .keypad button:active,
+html[data-theme="dark"] .quick-row button:active,
+html[data-theme="dark"] .icon-only:active,
+html[data-theme="dark"] .double-choice:active,
+html[data-theme="dark"] .checkout-darts button:active{
+ transform:translate3d(0,1px,0) scale(.968);
+ box-shadow:
+  0 2px 5px rgba(0,0,0,.30),
+  inset 0 2px 5px rgba(0,0,0,.34),
+  inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+html[data-theme="dark"] .keypad .key-ok,
+html[data-theme="dark"] .confirm-selected-double,
+html[data-theme="dark"] .save-edit{
+ background:
+  linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 28%),
+  linear-gradient(180deg,#f1536c 0%,#d92f4d 100%);
+ border-color:rgba(255,255,255,.14);
+ box-shadow:
+  0 10px 24px rgba(232,63,91,.20),
+  0 3px 7px rgba(0,0,0,.28),
+  inset 0 1px 0 rgba(255,255,255,.22),
+  inset 0 -2px 0 rgba(80,0,15,.28);
+}
+
+html[data-theme="dark"] .desktop-score-box,
+html[data-theme="dark"] .m-value-wrap{
+ background:
+  radial-gradient(120% 85% at 50% -10%,rgba(255,255,255,.055),transparent 48%),
+  linear-gradient(180deg,#161c1f,#101416);
+ border:1px solid rgba(255,255,255,.075);
+ box-shadow:
+  inset 0 2px 7px rgba(0,0,0,.46),
+  inset 0 1px 0 rgba(255,255,255,.035),
+  0 8px 22px rgba(0,0,0,.20);
+}
+
+html[data-theme="dark"] .desktop-score-input,
+html[data-theme="dark"] .m-value{
+ text-shadow:0 2px 12px rgba(0,0,0,.42);
+ font-variant-numeric:tabular-nums;
+}
+
+html[data-theme="dark"] .desktop-enter-bar{
+ background:
+  linear-gradient(180deg,rgba(255,255,255,.04),rgba(0,0,0,.055)),
+  #171d20;
+ border-color:rgba(255,255,255,.075);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 6px 18px rgba(0,0,0,.18);
+}
+
+html[data-theme="dark"] .score-ring{
+ box-shadow:
+  inset 0 0 0 18px color-mix(in srgb,var(--surface) 96%,transparent),
+  inset 0 2px 0 rgba(255,255,255,.035),
+  0 28px 70px rgba(0,0,0,.30),
+  0 0 0 1px rgba(255,255,255,.015);
+}
+
+html[data-theme="dark"] .m-hero{
+ background:
+  radial-gradient(130% 95% at 50% 0%,rgba(255,255,255,.045),transparent 52%),
+  linear-gradient(160deg,var(--surface2),var(--surface));
+ box-shadow:
+  0 12px 30px rgba(0,0,0,.24),
+  inset 0 1px 0 rgba(255,255,255,.045),
+  inset 0 -1px 0 rgba(0,0,0,.30);
+}
+
+html[data-theme="dark"] .player,
+html[data-theme="dark"] .m-player{
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 5px 14px rgba(0,0,0,.10);
+}
+
+html[data-theme="dark"] .player.active,
+html[data-theme="dark"] .m-player.active{
+ box-shadow:
+  0 9px 26px color-mix(in srgb,var(--player) 10%,transparent),
+  inset 0 1px 0 rgba(255,255,255,.045),
+  inset 0 0 26px color-mix(in srgb,var(--player) 5%,transparent);
+}
+
+.game-moment{
+ position:fixed;
+ z-index:120;
+ left:50%;
+ top:42%;
+ transform:translate3d(-50%,-50%,0) scale(.92);
+ font-size:clamp(58px,12vw,132px);
+ font-weight:1000;
+ letter-spacing:-.07em;
+ text-shadow:0 10px 50px rgb(0 0 0/.55);
+ animation:moment-pop .9s cubic-bezier(.2,.9,.2,1) both;
+ pointer-events:none;
+ backface-visibility:hidden;
+}
+.game-moment.max,.game-moment.bust{color:var(--red)}
+.game-moment.leg{color:var(--green)}
+
+@keyframes juicy-score-ring{
+ 0%{opacity:0;transform:scale(.88)}
+ 35%{opacity:.48}
+ 100%{opacity:0;transform:scale(1.13)}
+}
+
+.keypad button:focus-visible,
+.quick-row button:focus-visible,
+.icon-only:focus-visible,
+.desktop-score-input:focus-visible{
+ outline:2px solid var(--red);
+ outline-offset:2px;
+}
+
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{
+  scroll-behavior:auto!important;
+ }
+ .game-moment{animation:none!important}
+ .keypad button,.quick-row button,.icon-only,.player,.m-player{
+  transition:none!important;
+ }
+}
