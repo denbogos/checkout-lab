@@ -3,7 +3,19 @@
 **Checkout Lab** — бесплатный калькулятор и счётчик для дартса 301/501 с подсказками закрытий, Double Out, статистикой и полноценным офлайн-режимом.
 
 🌐 **Сайт:** https://checkoutlab.ru/  
-📋 **Таблица закрытий 2–170:** https://checkoutlab.ru/checkout-table.html
+📋 **Таблица закрытий 2–170:** https://checkoutlab.ru/checkout-table.html  
+🌍 **English version:** https://checkoutlab.ru/en/  
+🧮 **Калькулятор закрытий:** https://checkoutlab.ru/checkout-calculator.html
+
+## SEO / языковые версии
+
+Проект имеет отдельные индексируемые русские и английские URL с canonical + hreflang:
+- RU: https://checkoutlab.ru/
+- EN: https://checkoutlab.ru/en/
+- 301 / 501 landing pages;
+- интерактивный checkout calculator;
+- правила Double Out;
+- полная таблица закрытий 2–170.
 
 ## Возможности
 

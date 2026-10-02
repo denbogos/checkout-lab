@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
@@ -8,6 +8,9 @@
   <title>Таблица закрытий в дартсе 2–170 — Checkout Lab</title>
   <meta name="description" content="Таблица закрытий в дартсе для Double Out: маршруты от 2 до 170 очков, основные и запасные варианты, поиск по остатку. Бесплатно от Checkout Lab." />
   <link rel="canonical" href="https://checkoutlab.ru/checkout-table.html" />
+  <link rel="alternate" hreflang="ru" href="https://checkoutlab.ru/checkout-table.html" />
+  <link rel="alternate" hreflang="en" href="https://checkoutlab.ru/en/checkout-table.html" />
+  <link rel="alternate" hreflang="x-default" href="https://checkoutlab.ru/checkout-table.html" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Checkout Lab" />
   <meta property="og:title" content="Таблица закрытий в дартсе 2–170 — Checkout Lab" />
@@ -173,7 +176,7 @@
 (() => {
   const language=window.CheckoutI18n?.detect?.()||'ru';
   const langButton=document.querySelector('.table-lang-toggle');
-  if(langButton){langButton.textContent=language==='ru'?'EN':'RU';langButton.addEventListener('click',()=>{window.CheckoutI18n?.saveLanguage?.(language==='ru'?'en':'ru');location.reload();});}
+  if(langButton){langButton.textContent='EN';langButton.addEventListener('click',()=>{window.CheckoutI18n?.saveLanguage?.('en');location.href='./en/checkout-table.html';});}
   window.CheckoutI18n?.apply?.(document.body,language);
   window.CheckoutI18n?.applyMeta?.(language,'table');
   const input=document.getElementById('score-search');

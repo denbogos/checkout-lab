@@ -144,8 +144,15 @@ function save(){
 function load(){
  try{const session=JSON.parse(localStorage.getItem(STORAGE)||'null');if(session?.game?.players){state.game=session.game;state.undo=Array.isArray(session.undo)?session.undo:[];state.redo=Array.isArray(session.redo)?session.redo:[];}else{const legacy=JSON.parse(localStorage.getItem(LEGACY_STORAGE)||'null');if(legacy?.players)state.game=legacy;}}catch{}
  try{const settings=JSON.parse(localStorage.getItem(SETTINGS)||'null');if(settings)Object.assign(state,settings);}catch{}
+ const fixed=document.documentElement?.dataset?.lang;if(fixed==='ru'||fixed==='en')state.language=fixed;
 }
-function setLanguage(language){state.language=language==='en'?'en':'ru';window.CheckoutI18n?.saveLanguage?.(state.language);save();render();}
+function setLanguage(language){
+ const next=language==='en'?'en':'ru';window.CheckoutI18n?.saveLanguage?.(next);
+ const isEnglish=location.pathname==='/en/'||location.pathname.endsWith('/en/index.html');
+ if(next==='en'&&!isEnglish){location.href='/en/';return;}
+ if(next==='ru'&&isEnglish){location.href='/';return;}
+ state.language=next;save();render();
+}
 function snapshot(){if(!state.game)return;state.undo.push(clone(state.game));if(state.undo.length>40)state.undo.shift();state.redo=[];}
 function activePlayer(){return state.game?.players[state.game.active]||null;}
 function previewPlayer(){return state.previewPlayerId?state.game?.players.find(p=>p.id===state.previewPlayerId)||null:null;}
@@ -297,5 +304,5 @@ function bind(){
 if(globalThis.__CHECKOUT_LAB_TEST__)globalThis.__CL_TEST__={state,checkoutRoutes,isPossibleVisitTotal,validFinishDoubles,validCheckoutDartCounts,rebuildGame,applyRecordedVisit,startGame,requestVisitSubmit,confirmCheckout,undo,redo,openEditLast,applyEditedLastVisit,deleteLastVisit};
 load();render();
 document.addEventListener('visibilitychange',()=>syncWakeLock());document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&state.focusMode){state.focusMode=false;save();render();}});
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
 })();

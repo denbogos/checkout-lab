@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
@@ -11,6 +11,9 @@
   <title>Калькулятор и счётчик для дартса 301/501 — Checkout Lab</title>
   <meta name="description" content="Бесплатный калькулятор и счётчик для дартса 301/501: подсчёт очков, Double Out, подсказки закрытий, статистика и до 8 игроков. Работает онлайн и офлайн." />
   <link rel="canonical" href="https://checkoutlab.ru/" />
+  <link rel="alternate" hreflang="ru" href="https://checkoutlab.ru/" />
+  <link rel="alternate" hreflang="en" href="https://checkoutlab.ru/en/" />
+  <link rel="alternate" hreflang="x-default" href="https://checkoutlab.ru/" />
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Checkout Lab" />
@@ -62,6 +65,9 @@
 </head>
 <body>
   <div id="app"></div>
+  <nav class="site-guide-links" aria-label="Справочник по дартсу">
+    <span>Справочник:</span><a href="./darts-501.html">501</a><a href="./darts-301.html">301</a><a href="./checkout-calculator.html">Калькулятор закрытий</a><a href="./double-out.html">Double Out</a><a href="./checkout-table.html">Таблица 2–170</a>
+  </nav>
   <script src="./i18n.js" defer></script>
   <script src="./audio-engine.js" defer></script>
   <script src="./app.js" defer></script>
