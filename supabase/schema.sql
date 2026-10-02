@@ -18,7 +18,7 @@ create table public.profiles (
 );
 
 create table public.friendships (
-  id uuid primary key default gen_random_uuid(),
+  id uuid primary key default extensions.gen_random_uuid(),
   requester_id uuid not null references public.profiles(id) on delete cascade,
   addressee_id uuid not null references public.profiles(id) on delete cascade,
   status public.friendship_status not null default 'pending',
@@ -30,7 +30,7 @@ create unique index friendships_pair_unique on public.friendships
   (least(requester_id,addressee_id), greatest(requester_id,addressee_id));
 
 create table public.matches (
-  id uuid primary key default gen_random_uuid(),
+  id uuid primary key default extensions.gen_random_uuid(),
   room_code text not null unique check (room_code ~ '^[A-Z0-9]{6}$'),
   created_by uuid not null references public.profiles(id),
   game_type smallint not null check (game_type in (301,501)),
@@ -83,7 +83,7 @@ create table public.visits (
 create index visits_match_created_idx on public.visits(match_id,id);
 
 create table public.match_invitations (
-  id uuid primary key default gen_random_uuid(),
+  id uuid primary key default extensions.gen_random_uuid(),
   match_id uuid not null references public.matches(id) on delete cascade,
   sender_id uuid not null references public.profiles(id),
   recipient_id uuid not null references public.profiles(id),
@@ -162,7 +162,7 @@ grant execute on function private.is_match_player(uuid,uuid) to authenticated;
 
 create or replace function private.can_view_match(p_match uuid, p_user uuid)
 returns boolean language sql stable security definer set search_path=''
-as $
+as $$
   select exists(
     select 1 from public.matches m where m.id=p_match and (
       m.visibility='public' or m.created_by=p_user
@@ -170,7 +170,7 @@ as $
       or exists(select 1 from public.spectators s where s.match_id=p_match and s.user_id=p_user)
     )
   )
-$;
+$$;
 revoke execute on function private.can_view_match(uuid,uuid) from public, anon;
 grant execute on function private.can_view_match(uuid,uuid) to authenticated;
 
@@ -199,7 +199,7 @@ begin
   if p_game_type not in (301,501) then raise exception 'Invalid game type'; end if;
   if p_legs_to_win < 1 or p_legs_to_win > 25 then raise exception 'Invalid legs target'; end if;
   loop
-    code := upper(substr(encode(public.gen_random_bytes(6),'hex'),1,6));
+    code := upper(substr(encode(extensions.gen_random_bytes(6),'hex'),1,6));
     exit when not exists(select 1 from public.matches where room_code=code);
   end loop;
   insert into public.matches(room_code,created_by,game_type,double_out,legs_to_win,visibility,current_player_id)
@@ -233,7 +233,7 @@ create or replace function public.submit_online_visit(
   p_score smallint,
   p_darts_used smallint default 3,
   p_checkout boolean default false,
-  p_client_event_id uuid default gen_random_uuid()
+  p_client_event_id uuid default extensions.gen_random_uuid()
 ) returns public.matches
 language plpgsql security definer set search_path=''
 as $$
@@ -334,3 +334,18 @@ exception when duplicate_object then null; end $$;
 do $$ begin
   alter publication supabase_realtime add table public.visits;
 exception when duplicate_object then null; end $$;
+
+
+-- Security/performance hardening
+revoke execute on function public.rls_auto_enable() from public, anon, authenticated;
+create index if not exists friendships_requester_idx on public.friendships(requester_id);
+create index if not exists friendships_addressee_idx on public.friendships(addressee_id);
+create index if not exists invitations_match_idx on public.match_invitations(match_id);
+create index if not exists invitations_sender_idx on public.match_invitations(sender_id);
+create index if not exists invitations_recipient_idx on public.match_invitations(recipient_id);
+create index if not exists match_players_user_idx on public.match_players(user_id);
+create index if not exists matches_created_by_idx on public.matches(created_by);
+create index if not exists matches_current_player_idx on public.matches(current_player_id);
+create index if not exists matches_winner_idx on public.matches(winner_id);
+create index if not exists spectators_user_idx on public.spectators(user_id);
+create index if not exists visits_user_idx on public.visits(user_id);
