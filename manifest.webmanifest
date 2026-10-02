@@ -1,0 +1,14 @@
+{
+  "name": "Checkout Lab — Дартс",
+  "short_name": "Checkout Lab",
+  "description": "Checkout Lab 1.0.1 — офлайн-счётчик 301/501 с Double Out и подсказками закрытий",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#090c0e",
+  "theme_color": "#090c0e",
+  "icons": [
+    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
