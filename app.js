@@ -51,7 +51,7 @@ function hitRank(h,pos,total){
  if(h.multiplier===1)return 45+Math.max(0,20-h.number);
  return 80;
 }
-function routeRank(route){return route.length*100+route.reduce((s,h,i)=>s+hitRank(h,i,route.length),0)-route.slice(0,-1).filter(h=>h.isTreble).length*12;}
+function routeRank(route){return route.length*100+route.reduce((s,h,i)=>s+hitRank(h,i,route.length),0)-route.slice(0,-1).filter(h=>h.isTreble).length*12;}\nfunction normalizeCheckoutRoute(route){\n const out=[...route],setupEnd=Math.max(0,out.length-1);\n const trebles=out.slice(0,setupEnd).filter(h=>h.isTreble).sort((a,b)=>b.number-a.number);\n let ti=0;for(let i=0;i<setupEnd;i++)if(out[i].isTreble)out[i]=trebles[ti++];\n return out;\n}
 const routeCache=new Map();
 function checkoutRoutes(score,darts=3,limit=4){
  const key=`${score}-${darts}-${limit}`; if(routeCache.has(key)) return routeCache.get(key);
@@ -60,8 +60,8 @@ function checkoutRoutes(score,darts=3,limit=4){
  for(const f of finishers)if(f.value===score)routes.push([f]);
  if(darts>=2)for(const a of playable)for(const f of finishers)if(a.value+f.value===score)routes.push([a,f]);
  if(darts>=3)for(const a of playable)for(const b of playable){const left=score-a.value-b.value;for(const f of finishers)if(f.value===left)routes.push([a,b,f]);}
- const unique=[...new Map(routes.map(r=>[r.map(h=>h.label).join('-'),r])).values()];
- const pref=(canonical[score]||[]).join('-');
+ const normalized=routes.map(normalizeCheckoutRoute);\n const unique=[...new Map(normalized.map(r=>[r.map(h=>h.label).join('-'),r])).values()];
+ const pref=normalizeCheckoutRoute((canonical[score]||[]).map(label=>byLabel[label]).filter(Boolean)).map(h=>h.label).join('-');
  unique.sort((a,b)=>{const ak=a.map(h=>h.label).join('-'),bk=b.map(h=>h.label).join('-');if(ak===pref)return -1;if(bk===pref)return 1;return routeRank(a)-routeRank(b);});
  const out=unique.slice(0,limit);routeCache.set(key,out);return out;
 }
