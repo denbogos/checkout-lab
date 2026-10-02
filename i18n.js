@@ -15,12 +15,12 @@ const exact={
 'ВВОД ПОДХОДА':'VISIT INPUT','Введите сумму':'Enter score','ОСТАЛОСЬ':'REMAINING','СЧЁТ ИГРОКА':'PLAYER SCORE','СЕЙЧАС БРОСАЕТ':'NOW THROWING','3 ДРОТИКА':'3 DARTS','3 ДРОТИКА · ВЫХОД':'3 DARTS · CHECKOUT','3 ДРОТИКА · ПРОСМОТР':'3 DARTS · PREVIEW',
 'BUST — счёт не изменится':'BUST — score stays unchanged','ЗАКРЫТИЕ · выберите последнее удвоение':'CHECKOUT · choose the finishing double','останется':'remaining',
 'Последние подходы':'Recent visits','ИСТОРИЯ МАТЧА':'MATCH HISTORY','Подходов пока нет':'No visits yet','Изменить последний подход':'Edit last visit','Отменить последний подход':'Undo last visit','Вернуть подход':'Redo visit',
-'ПОБЕДИТЕЛЬ МАТЧА':'MATCH WINNER','Сыграть ещё':'Play again','Новая игра':'New game','МАТЧ!':'MATCH!','ЛЕГ':'LEG',
+'ПОБЕДИТЕЛЬ МАТЧА':'MATCH WINNER','Сыграть ещё':'Play again','Вернуться':'Back','Новая игра':'New game','МАТЧ!':'MATCH!','ЛЕГ':'LEG',
 'ТЕКУЩИЙ МАТЧ':'CURRENT MATCH','средний набор':'average score','лучший подход':'best visit','дротиков':'darts','легов':'legs',
 'Матч ещё не начат':'Match has not started','Добавь игроков и выбери 301, 501 или свой режим.':'Add players and choose 301, 501 or a custom game.','Нет статистики':'No statistics','Сначала начни матч.':'Start a match first.',
 'Таблица закрытий':'Checkout table','61—170':'61—170','Основной маршрут и запасные варианты. Утроения готовят, удвоения закрывают.':'Primary route and alternatives. Trebles set up, doubles finish.','Найти остаток':'Find score',
 'ОСНОВНОЙ':'PRIMARY','ВАРИАНТ':'ALTERNATIVE','Нет закрытия':'No checkout','Подготовь следующий подход':'Set up the next visit','ОДИНОЧНЫЙ':'SINGLE','УДВОЕНИЕ':'DOUBLE','УТРОЕНИЕ':'TREBLE',
-'DOUBLE OUT':'DOUBLE OUT','ДРОТИКОВ В ЗАКРЫТИИ':'DARTS IN CHECKOUT','РЕКОМЕНДУЕТСЯ':'RECOMMENDED','РЕК.':'REC.','Не закрыли — BUST':'Missed double — BUST','ЗАКРЫТО':'FINISHED',
+'DOUBLE OUT':'DOUBLE OUT','ПРОСМОТР ЗАКРЫТИЯ':'CHECKOUT PREVIEW','ДРОТИКОВ В ЗАКРЫТИИ':'DARTS IN CHECKOUT','РЕКОМЕНДУЕТСЯ':'RECOMMENDED','РЕК.':'REC.','Выберите последнее удвоение. Оно сохранится в истории и статистике матча.':'Choose the finishing double. It will be saved in match history and statistics.','Не закрыли — BUST':'Missed double — BUST','ЗАКРЫТО':'FINISHED',
 'ПОСЛЕДНИЙ ПОДХОД':'LAST VISIT','Исправить результат':'Edit result','Новая сумма':'New score','Последнее удвоение':'Finishing double','Сохранить':'Save','Удалить подход':'Delete visit','Отмена':'Cancel',
 'CHECKOUT LAB 1.0':'CHECKOUT LAB 1.1','Настройки матча':'Match settings','Звук интерфейса':'Interface sound','Нажатия, броски, 180, BUST, LEG':'Taps, darts, 180, BUST, LEG','Короткий отклик на телефоне':'Short haptic feedback on phone',
 'Экран не гаснет':'Keep screen awake','Активно во время матча':'Active during match','Не поддерживается браузером':'Not supported by this browser','Полный экран, минимум браузерных элементов':'Fullscreen with minimal browser UI',
@@ -64,6 +64,8 @@ function dynamic(s){
  if((m=s.match(/^Остаток (\d+)$/)))return `Score ${m[1]}`;
  if((m=s.match(/^(\d+) остатков$/)))return `${m[1]} scores`;
  if((m=s.match(/^было (\d+)$/)))return `was ${m[1]}`;
+ if((m=s.match(/^(.+) · было (\d+)$/)))return `${m[1]} · was ${m[2]}`;
+ if((m=s.match(/^Чем закрыли (\d+)\?$/)))return `How did you finish ${m[1]}?`;
  if((m=s.match(/^(.+) → оставить (\d+)$/)))return `${m[1]} → leave ${m[2]}`;
  if((m=s.match(/^ЗАКРЫТО · (.+)$/)))return `FINISHED · ${m[1]}`;
  if((m=s.match(/^ХОД · (.+)$/)))return `TURN · ${m[1]}`;
@@ -78,7 +80,7 @@ function tr(s){
  const clean=s.trim();
  if(exact[clean])return exact[clean];
  const direct=dynamic(clean);if(direct!==clean)return direct;
- const prefixed=clean.match(/^([＋◉▤▥⛶🔊🔇○☀☾↻↩]\s*)(.+)$/);
+ const prefixed=clean.match(/^([＋◉▤▥⛶🔊🔇○☀☾↻↩×◷]\s*)(.+)$/);
  if(prefixed){const translated=exact[prefixed[2]]||dynamic(prefixed[2]);if(translated!==prefixed[2])return prefixed[1]+translated;}
  return clean;
 }
@@ -99,7 +101,16 @@ function apply(root=document,language=detect()){
  });
 }
 function applyMeta(language,page='app'){
- if(language!=='en')return;
+ if(language!=='en'){
+  if(page==='table'){
+   document.title='Таблица закрытий в дартсе 2–170 — Checkout Lab';
+   document.querySelector('meta[name="description"]')?.setAttribute('content','Таблица закрытий в дартсе для Double Out: маршруты от 2 до 170 очков, основные и запасные варианты, поиск по остатку. Бесплатно от Checkout Lab.');
+  }else{
+   document.title='Checkout Lab — счётчик для дартса';
+   document.querySelector('meta[name="description"]')?.setAttribute('content','Checkout Lab — профессиональный офлайн-счётчик для дартса 301/501 с Double Out, мультиплеером и подсказками закрытий.');
+  }
+  return;
+ }
  if(page==='table'){
   document.title='Darts Checkout Table 2–170 — Checkout Lab';
   const desc='Double Out darts checkout table from 2 to 170 with primary and alternative routes and instant score search.';
