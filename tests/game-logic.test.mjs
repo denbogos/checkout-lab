@@ -110,6 +110,14 @@ test('custom start score is clamped to the supported range',()=>{
  assert.equal(api.state.game.startScore,5001);
 });
 
+test('dynamic visit preview is generated directly in English',()=>{
+ const {api}=createApp();
+ api.state.language='en';api.state.names=['Player 1'];api.state.mode=0;api.state.customScore=121;api.startGame();
+ api.state.visitValue='121';
+ assert.match(api.visitPreview(),/CHECKOUT · choose the finishing double/);
+ assert.doesNotMatch(api.visitPreview(),/[А-Яа-яЁё]/);
+});
+
 test('checkout routes remain valid for every score from 2 to 170',()=>{
  const {api}=createApp();
  const bogeys=new Set([159,162,163,165,166,168,169]);

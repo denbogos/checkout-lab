@@ -65,6 +65,8 @@ function dynamic(s){
  if((m=s.match(/^ХОД: (.+)$/)))return `TURN: ${m[1]}`;
  if((m=s.match(/^для (.+) · цифры → Enter$/)))return `for ${m[1]} · digits → Enter`;
  if((m=s.match(/^Игрок (\d+)$/)))return `Player ${m[1]}`;
+ if((m=s.match(/^Имя игрока (\d+)$/)))return `Player ${m[1]} name`;
+ if((m=s.match(/^Удалить игрока (\d+)$/)))return `Remove player ${m[1]}`;
  if((m=s.match(/^Остаток (\d+)$/)))return `Score ${m[1]}`;
  if((m=s.match(/^(\d+) остатков$/)))return `${m[1]} scores`;
  if((m=s.match(/^было (\d+)$/)))return `was ${m[1]}`;
