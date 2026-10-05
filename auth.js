@@ -46,15 +46,18 @@ function ensureButtons(){
 }
 function updateButtons(){
   document.querySelectorAll('.auth-trigger').forEach(btn=>{
-    btn.innerHTML=currentUser
+    const html=currentUser
       ? '<span class="auth-dot"></span><span>'+escapeHtml(shortEmail(currentUser.email||t('Аккаунт','Account')))+'</span>'
       : '<span class="auth-user-icon">●</span><span>'+t('Войти','Sign in')+'</span>';
-    btn.title=currentUser?.email||t('Войти или зарегистрироваться','Sign in or create an account');
+    if(btn.innerHTML!==html)btn.innerHTML=html;
+    const title=currentUser?.email||t('Войти или зарегистрироваться','Sign in or create an account');
+    if(btn.title!==title)btn.title=title;
   });
   document.querySelectorAll('.auth-menu-trigger').forEach(btn=>{
-    btn.textContent=currentUser
+    const label=currentUser
       ? '● '+(currentUser.email||t('Аккаунт','Account'))
       : '● '+t('Войти / Регистрация','Sign in / Sign up');
+    if(btn.textContent!==label)btn.textContent=label;
   });
 }
 function bindTriggers(){
