@@ -31,6 +31,13 @@ test('checkout table language controls point to the opposite locale',()=>{
  assert.doesNotMatch(en,/\.\/en\/checkout-table\.html/);
 });
 
+test('score event labels are localized in English',()=>{
+ const css=readFileSync(resolve(root,'styles.css'),'utf8');
+ assert.match(css,/html\[lang="en"\] \.game-moment\.max::after\{content:"MAXIMUM"\}/);
+ assert.match(css,/html\[lang="en"\] \.game-moment\.bust::after\{content:"SCORE UNCHANGED"\}/);
+ assert.match(css,/html\[lang="en"\] \.game-moment\.leg::after\{content:"CHECKOUT"\}/);
+});
+
 test('beta online pages stay out of search indexes',()=>{
  for(const file of ['online.html','en/online.html']){
   const html=readFileSync(resolve(root,file),'utf8');
