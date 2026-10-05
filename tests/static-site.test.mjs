@@ -1,0 +1,56 @@
+import assert from 'node:assert/strict';
+import {existsSync,readFileSync} from 'node:fs';
+import {dirname,resolve} from 'node:path';
+import test from 'node:test';
+
+const root=resolve(new URL('..',import.meta.url).pathname);
+const htmlFiles=[
+ 'index.html','checkout-table.html','checkout-calculator.html','darts-501.html','darts-301.html','double-out.html',
+ 'en/index.html','en/checkout-table.html','en/checkout-calculator.html','en/darts-501.html','en/darts-301.html','en/double-out.html'
+];
+
+test('internal HTML links resolve to published files',()=>{
+ for(const file of htmlFiles){
+  const html=readFileSync(resolve(root,file),'utf8');
+  const links=[...html.matchAll(/href=["']([^"'#?]+)["']/g)].map(match=>match[1]);
+  for(const href of links){
+   if(/^(?:https?:|mailto:|data:)/.test(href))continue;
+   const target=resolve(dirname(resolve(root,file)),href);
+   const resolved=href.endsWith('/')?resolve(target,'index.html'):target;
+   assert.equal(existsSync(resolved),true,`${file} -> ${href}`);
+  }
+ }
+});
+
+test('checkout table language controls point to the opposite locale',()=>{
+ const ru=readFileSync(resolve(root,'checkout-table.html'),'utf8');
+ const en=readFileSync(resolve(root,'en/checkout-table.html'),'utf8');
+ assert.match(ru,/location\.href='\.\/en\/checkout-table\.html'/);
+ assert.match(en,/langButton\.textContent='RU'/);
+ assert.match(en,/location\.href='\.\.\/checkout-table\.html'/);
+ assert.doesNotMatch(en,/\.\/en\/checkout-table\.html/);
+});
+
+test('beta online pages stay out of search indexes',()=>{
+ for(const file of ['online.html','en/online.html']){
+  const html=readFileSync(resolve(root,file),'utf8');
+  assert.match(html,/<meta name="robots" content="noindex,nofollow">/);
+ }
+});
+
+test('service worker caches only successful same-origin responses',()=>{
+ const source=readFileSync(resolve(root,'sw.js'),'utf8');
+ assert.match(source,/url\.origin!==self\.location\.origin/);
+ assert.match(source,/response\?\.ok&&response\.type==='basic'/);
+ assert.match(source,/path\.startsWith\('\/en\/'\)\?'\/en\/index\.html':'\/index\.html'/);
+ assert.match(source,/SKIP_WAITING/);
+ assert.doesNotMatch(source,/cdn\.jsdelivr\.net/);
+});
+
+test('RU and EN manifests share one PWA identity',()=>{
+ const ru=JSON.parse(readFileSync(resolve(root,'manifest.webmanifest'),'utf8'));
+ const en=JSON.parse(readFileSync(resolve(root,'en/manifest.webmanifest'),'utf8'));
+ assert.equal(ru.id,'./');
+ assert.equal(en.id,'/');
+ assert.equal(en.scope,'/');
+});
