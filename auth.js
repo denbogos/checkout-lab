@@ -9,6 +9,7 @@ let mode='login';
 let notice='';
 let noticeType='info';
 let busy=false;
+let pendingEmail='';
 
 const ru=()=>document.documentElement.dataset.lang!=='en';
 const t=(a,b)=>ru()?a:b;
@@ -95,21 +96,22 @@ function modalMarkup(){
 
   const signup=mode==='signup';
   const reset=mode==='reset';
+  const recovery=mode==='update-password';
   return `<div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="auth-title">
     <button class="auth-close" type="button" aria-label="${t('Закрыть','Close')}">×</button>
     <span class="auth-kicker">CHECKOUT LAB</span>
-    <h2 id="auth-title">${reset?t('Восстановление пароля','Reset password'):signup?t('Создать аккаунт','Create account'):t('Вход','Sign in')}</h2>
-    <p class="auth-copy">${reset?t('Укажи почту — отправим ссылку для восстановления.','Enter your email and we will send a recovery link.'):signup?t('Регистрация бесплатная. После неё подтвердите почту по ссылке в письме.','Registration is free. Confirm your email using the link we send you.'):t('Войди в свой аккаунт Checkout Lab.','Sign in to your Checkout Lab account.')}</p>
+    <h2 id="auth-title">${recovery?t('Новый пароль','New password'):reset?t('Восстановление пароля','Reset password'):signup?t('Создать аккаунт','Create account'):t('Вход','Sign in')}</h2>
+    <p class="auth-copy">${recovery?t('Придумай новый пароль для аккаунта.','Choose a new password for your account.'):reset?t('Укажи почту — отправим ссылку для восстановления.','Enter your email and we will send a recovery link.'):signup?t('Регистрация бесплатная. После неё подтвердите почту по ссылке в письме.','Registration is free. Confirm your email using the link we send you.'):t('Войди в свой аккаунт Checkout Lab.','Sign in to your Checkout Lab account.')}</p>
     <form class="auth-form">
-      <label><span>Email</span><input id="auth-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="name@example.com"></label>
-      ${reset?'':`<label><span>${t('Пароль','Password')}</span><input id="auth-password" name="password" type="password" autocomplete="${signup?'new-password':'current-password'}" minlength="8" required placeholder="${t('Минимум 8 символов','At least 8 characters')}"></label>`}
-      <button class="auth-primary" type="submit" ${busy?'disabled':''}>${busy?t('Подождите…','Please wait…'):reset?t('Отправить ссылку','Send recovery link'):signup?t('Зарегистрироваться','Create account'):t('Войти','Sign in')}</button>
+      ${recovery?'':`<label><span>Email</span><input id="auth-email" name="email" type="email" autocomplete="email" inputmode="email" required placeholder="name@example.com"></label>`}
+      ${reset?'':`<label><span>${recovery?t('Новый пароль','New password'):t('Пароль','Password')}</span><input id="auth-password" name="password" type="password" autocomplete="${signup||recovery?'new-password':'current-password'}" minlength="8" required placeholder="${t('Минимум 8 символов','At least 8 characters')}"></label>`}
+      <button class="auth-primary" type="submit" ${busy?'disabled':''}>${busy?t('Подождите…','Please wait…'):recovery?t('Сохранить пароль','Save password'):reset?t('Отправить ссылку','Send recovery link'):signup?t('Зарегистрироваться','Create account'):t('Войти','Sign in')}</button>
     </form>
     ${notice?`<div class="auth-notice ${noticeType}">${escapeHtml(notice)}</div>`:''}
     ${signup&&noticeType==='success'?'<button class="auth-resend" type="button">'+t('Отправить письмо ещё раз','Resend confirmation email')+'</button>':''}
-    <div class="auth-switch">
+    ${recovery?'':`<div class="auth-switch">
       ${reset?'<button type="button" data-auth-mode="login">'+t('← Вернуться ко входу','← Back to sign in')+'</button>':signup?'<span>'+t('Уже есть аккаунт?','Already have an account?')+'</span><button type="button" data-auth-mode="login">'+t('Войти','Sign in')+'</button>':'<span>'+t('Нет аккаунта?','No account yet?')+'</span><button type="button" data-auth-mode="signup">'+t('Регистрация','Sign up')+'</button>'}
-    </div>
+    </div>`}
     ${!signup&&!reset?'<button class="auth-forgot" type="button" data-auth-mode="reset">'+t('Забыли пароль?','Forgot password?')+'</button>':''}
   </div>`;
 }
@@ -128,17 +130,24 @@ function renderModal(focus=false){
   backdrop.querySelector('.auth-form')?.addEventListener('submit',handleSubmit);
   backdrop.querySelector('.auth-signout')?.addEventListener('click',handleSignOut);
   backdrop.querySelector('.auth-resend')?.addEventListener('click',handleResend);
-  if(focus)setTimeout(()=>backdrop.querySelector('#auth-email')?.focus(),0);
+  if(focus)setTimeout(()=>backdrop.querySelector('#auth-email,#auth-password')?.focus(),0);
 }
 async function handleSubmit(e){
   e.preventDefault();
   if(!client){setNotice(t('Для входа нужен интернет. Проверь соединение и обнови страницу.','Internet access is required. Check your connection and reload the page.'),'error');return;}
-  const email=e.currentTarget.email.value.trim();
+  const email=e.currentTarget.email?.value.trim()||'';
   const password=e.currentTarget.password?.value||'';
-  if(!email)return;
+  if(mode!=='update-password'&&!email)return;
+  if(email)pendingEmail=email;
   setBusy(true);
   try{
-    if(mode==='signup'){
+    if(mode==='update-password'){
+      const {error}=await client.auth.updateUser({password});
+      if(error)throw error;
+      notice=t('Пароль обновлён. Теперь можно продолжить игру.','Password updated. You can continue playing.');
+      noticeType='success';
+      mode='account';
+    }else if(mode==='signup'){
       const {data,error}=await client.auth.signUp({email,password});
       if(error)throw error;
       if(data.session){
@@ -149,7 +158,8 @@ async function handleSubmit(e){
         noticeType='success';
       }
     }else if(mode==='reset'){
-      const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/'});
+      const callbackPath=ru()?'/':'/en/';
+      const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+callbackPath});
       if(error)throw error;
       notice=t('Ссылка для восстановления отправлена на почту.','Password recovery link sent.');
       noticeType='success';
@@ -170,7 +180,7 @@ async function handleSubmit(e){
 }
 async function handleResend(){
   if(!client)return;
-  const email=document.querySelector('#auth-email')?.value.trim();
+  const email=document.querySelector('#auth-email')?.value.trim()||pendingEmail;
   if(!email){setNotice(t('Введите email ещё раз.','Enter your email again.'),'error');return;}
   setBusy(true);
   const {error}=await client.auth.resend({type:'signup',email});
@@ -189,7 +199,7 @@ async function init(){
     const r=document.createElement('div');r.id='auth-root';document.body.appendChild(r);
   }
   ensureButtons();
-  new MutationObserver(()=>ensureButtons()).observe(document.getElementById('app')||document.body,{childList:true,subtree:true});
+  document.addEventListener('checkoutlab:render',ensureButtons);
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('auth-open'))closeModal();});
   if(!cfg.url||!cfg.publishableKey)return;
   try{
@@ -201,7 +211,9 @@ async function init(){
     client.auth.onAuthStateChange((event,session)=>{
       currentUser=session?.user||null;
       updateButtons();
-      if(event==='SIGNED_IN'&&currentUser&&location.hash){
+      if(event==='PASSWORD_RECOVERY'){
+        openModal('update-password');
+      }else if(event==='SIGNED_IN'&&currentUser&&location.hash){
         history.replaceState(null,'',location.pathname+location.search);
       }
     });
