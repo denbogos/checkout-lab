@@ -303,6 +303,7 @@ function render(){
  const app=document.getElementById('app');app.innerHTML=`<main class="app ${state.theme==='light'?'light':''}">${header()}${mobileMenu()}${content}${historyDrawer()}${momentOverlay()}${confirmModal()}${settingsPanel()}${editLastModal()}</main>`;window.CheckoutI18n?.apply?.(app,state.language);window.CheckoutI18n?.applyMeta?.(state.language,'app');bind();syncWakeLock();
  const dialog=app.querySelector?.('[role="dialog"]');if(dialog)requestAnimationFrame(()=>dialog.querySelector('input,button,select,[tabindex="0"]')?.focus({preventScroll:true}));
  if(state.screen==='game'&&state.game?.players.length>=5&&window.matchMedia?.('(max-width:768px)').matches){requestAnimationFrame(()=>document.querySelector('.mobile-scoreboard .m-player.active')?.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'}));}
+ if(typeof document.dispatchEvent==='function'&&typeof Event==='function')document.dispatchEvent(new Event('checkoutlab:render'));
 }
 function bind(){
  document.querySelectorAll('[data-nav]').forEach(el=>el.onclick=()=>nav(el.dataset.nav));

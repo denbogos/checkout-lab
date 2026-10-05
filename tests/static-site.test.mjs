@@ -47,12 +47,33 @@ test('beta online pages stay out of search indexes',()=>{
 
 test('service worker caches only successful same-origin responses',()=>{
  const source=readFileSync(resolve(root,'sw.js'),'utf8');
- assert.match(source,/CACHE=`\$\{CACHE_PREFIX\}v2\.1\.3`/);
+ assert.match(source,/CACHE=`\$\{CACHE_PREFIX\}v2\.2\.0`/);
  assert.match(source,/url\.origin!==self\.location\.origin/);
  assert.match(source,/response\?\.ok&&response\.type==='basic'/);
  assert.match(source,/path\.startsWith\('\/en\/'\)\?'\/en\/index\.html':'\/index\.html'/);
  assert.match(source,/SKIP_WAITING/);
  assert.doesNotMatch(source,/cdn\.jsdelivr\.net/);
+});
+
+test('authentication is isolated from the game render loop',()=>{
+ const auth=readFileSync(resolve(root,'auth.js'),'utf8');
+ const app=readFileSync(resolve(root,'app.js'),'utf8');
+ assert.doesNotMatch(auth,/MutationObserver/);
+ assert.match(auth,/addEventListener\('checkoutlab:render',ensureButtons\)/);
+ assert.match(app,/dispatchEvent\(new Event\('checkoutlab:render'\)\)/);
+ assert.match(auth,/event==='PASSWORD_RECOVERY'/);
+ assert.match(auth,/auth\.updateUser\(\{password\}\)/);
+ assert.match(auth,/mode!=='update-password'&&!email/);
+ assert.match(auth,/\|\|pendingEmail/);
+});
+
+test('RU and EN app shells include the isolated auth bundle',()=>{
+ for(const file of ['index.html','en/index.html']){
+  const html=readFileSync(resolve(root,file),'utf8');
+  assert.match(html,/auth\.css/);
+  assert.match(html,/supabase-config\.js/);
+  assert.match(html,/auth\.js/);
+ }
 });
 
 test('desktop visit preview reapplies the selected language after input',()=>{
