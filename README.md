@@ -35,6 +35,11 @@
 | ✏️ **Правка и отмена** | Undo / Redo, исправление или удаление последнего подхода |
 | 🛡️ **Проверка ввода** | невозможные суммы за три дротика, BUST, выбор удвоения при закрытии |
 | 📴 **Офлайн и PWA** | устанавливается на телефон и ПК, работает без интернета |
+| 🏋️ **Тренировка** | квиз «назови закрытие» и круг по удвоениям с процентом попаданий |
+| 🗂️ **История матчей** | статистика за всё время по каждому игроку, последние матчи |
+| 🎯 **Ввод по дротикам** | второй режим ввода — каждый дротик (S/D/T, 25, Bull) вместо суммы подхода |
+| 🎙️ **Голос диктора** | объявляет очки, 180, перебор и остаток для закрытия |
+| 📤 **Поделиться результатом** | картинка со счётом и статистикой — в Telegram, WhatsApp и т. д. |
 | 🌗 **Две темы и два языка** | тёмная и светлая тема, русский и английский |
 
 ## Скриншоты
@@ -89,6 +94,8 @@
 | [Калькулятор закрытий](https://checkoutlab.ru/checkout-calculator.html) | [Checkout calculator](https://checkoutlab.ru/en/checkout-calculator.html) |
 | [Счётчик 501](https://checkoutlab.ru/darts-501.html) · [301](https://checkoutlab.ru/darts-301.html) | [501](https://checkoutlab.ru/en/darts-501.html) · [301](https://checkoutlab.ru/en/darts-301.html) |
 | [Правила Double Out](https://checkoutlab.ru/double-out.html) | [Double Out rules](https://checkoutlab.ru/en/double-out.html) |
+| [Термины дартса](https://checkoutlab.ru/darts-terms.html) | [Darts terms](https://checkoutlab.ru/en/darts-terms.html) |
+| [Закрытие 170](https://checkoutlab.ru/checkout/170.html) … [2](https://checkoutlab.ru/checkout/2.html) — страница на каждый остаток | [170 checkout](https://checkoutlab.ru/en/checkout/170.html) … |
 
 У каждой страницы свой canonical, `hreflang` и мета-теги для поисковиков.
 
@@ -112,6 +119,8 @@
 ├── sw.js                 офлайн-кэш
 ├── checkout-table.html   таблица закрытий 2–170
 ├── *.html + seo.css      справочные страницы
+├── checkout/             страницы закрытий 2–170 (генерируются)
+├── tools/                генератор SEO-страниц и sitemap
 ├── fonts/                Oswald и Roboto Condensed (SIL OFL)
 └── tests/                тесты логики игры и сайта
 ```
@@ -121,6 +130,9 @@
 ```bash
 # локальный сервер
 npx http-server -c-1 .
+
+# пересобрать страницы закрытий и sitemap
+npm run build:seo
 
 # тесты
 npm test
