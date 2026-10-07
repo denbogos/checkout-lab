@@ -41,7 +41,13 @@ const exact={
 'Маршрут единственный?':'Is there only one route?','Нет. Для многих остатков существует несколько правильных вариантов. Checkout Lab показывает основной и несколько запасных маршрутов.':'No. Many scores have several valid routes. Checkout Lab shows a primary route and several alternatives.',
 'бесплатный счётчик для дартса 301/501':'free 301/501 darts scorer',
 'Подсказки закрытий':'Checkout hints','Маршруты Double Out от 2 до 170':'Double Out routes from 2 to 170','До 8 игроков':'Up to 8 players','Очередь, леги и статистика':'Turn order, legs and statistics','Работает офлайн':'Works offline','Установи на телефон как приложение':'Install it on your phone as an app',
-'Double Out · Bull разрешён':'Double Out · Bull allowed','начинал лег':'started leg','БРОСАЕТ':'THROWING','Леги':'Legs','Последний':'Last','Счёт':'Score','Лучшее закрытие':'Best checkout','лучшее закрытие':'best checkout','Дротиков в леге':'Darts this leg','Далее:':'Next:','История':'History',
+'Double Out · Bull разрешён':'Double Out · Bull allowed','Тренировка':'Training','ТРЕНИРОВКА':'TRAINING','Удвоения':'Doubles','Очки':'Points','Серия':'Streak','Рекорд':'Best','ЗАКРОЙ':'CHECK OUT','Показать ответ':'Show answer','Дальше':'Next','Оптимально!':'Optimal!','Верно':'Correct','Ответ':'Answer','Не закрывает':'Not a checkout','Лучшие маршруты:':'Best routes:',
+'Наберите маршрут дротиками. Последний — в удвоение.':'Tap your route dart by dart. The last dart must be a double.','Назовите маршрут закрытия для случайного остатка: +2 за оптимальный, +1 за верный.':'Name the checkout route for a random score: +2 for the optimal route, +1 for any valid one.',
+'Круг по удвоениям у мишени: отмечайте каждый дротик и смотрите процент попаданий.':'Round the doubles at the board: mark every dart and track your hit rate.','Цель':'Target','Попаданий':'Hit rate','БРОСАЙТЕ В':'AIM AT','Мимо':'Miss','Попал':'Hit','Отменить':'Undo','Ещё раз':'Again','РЕЗУЛЬТАТ':'RESULT',
+'Три дротика в каждое удвоение от D1 до D20 и в Bull. Отмечайте попадания.':'Three darts at every double from D1 to D20 and the bull. Mark your hits.',
+'Сумма':'Total','По дротикам':'By dart','Ввод':'Input','Ввод очков':'Score input','Сумма подхода или каждый дротик':'Visit total or every dart','Голос диктора':'Caller voice','Объявляет очки и остаток для закрытия':'Announces scores and checkout requirements','Способ ввода':'Input method','Убрать последний дротик':'Remove last dart',
+'Все матчи':'All matches','Очистить историю':'Clear history','Здесь появится статистика после первого завершённого матча.':'Statistics appear here after your first finished match.','Матчей':'Matches','Побед':'Wins','Средний':'Average','Лучший':'Best','Закрытие':'Checkout','Последние матчи':'Recent matches',
+'начинал лег':'started leg','БРОСАЕТ':'THROWING','Леги':'Legs','Последний':'Last','Счёт':'Score','Лучшее закрытие':'Best checkout','лучшее закрытие':'best checkout','Дротиков в леге':'Darts this leg','Далее:':'Next:','История':'History',
 'МАРШРУТ НА МИШЕНИ':'ROUTE ON THE BOARD','КУДА ЦЕЛИТЬСЯ':'WHERE TO AIM','МИШЕНЬ':'BOARD','ОСТАТОК':'REMAINING','Запасные:':'Alternatives:','Бросает':'Throwing','Просмотр:':'Preview:','История матча':'Match history','Закрыть историю':'Close history','Закрыть настройки':'Close settings','Введите число от 61 до 170.':'Enter a number from 61 to 170.','Удалить цифру':'Delete digit','Вернуть отменённый подход':'Redo visit',
 'Основная навигация':'Main navigation'
 };
@@ -81,6 +87,8 @@ function dynamic(s){
  if((m=s.match(/^ХОД · (.+)$/)))return `TURN · ${m[1]}`;
  if((m=s.match(/^ПРОСМОТР · (.+)$/)))return `PREVIEW · ${m[1]}`;
  if((m=s.match(/^Ничего не найдено$/)))return 'Nothing found';
+ if((m=s.match(/^(\d+) из (\d+) дротиков в удвоение$/)))return `${m[1]} of ${m[2]} darts on a double`;
+ if((m=s.match(/^Лучшие: (.+) · Слабые: (.+)$/)))return `Strongest: ${m[1]} · Weakest: ${m[2]}`;
  if((m=s.match(/^Подход (\d+) · 3 дротика$/)))return `Visit ${m[1]} · 3 darts`;
  if((m=s.match(/^Дротик (\d)$/)))return `Dart ${m[1]}`;
  if((m=s.match(/^до (\d+) лег(а|ов)$/)))return `first to ${m[1]} ${m[1]==='1'?'leg':'legs'}`;

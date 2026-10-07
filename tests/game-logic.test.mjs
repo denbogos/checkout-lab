@@ -130,3 +130,38 @@ test('checkout routes remain valid for every score from 2 to 170',()=>{
   }
  }
 });
+
+test('finished matches are saved to history and removed again on undo',()=>{
+ const {api,storage}=createApp();
+ api.state.names=['A','B'];api.state.mode=301;api.state.legs=1;api.startGame();
+ const game=api.state.game;game.players[0].score=40;
+ api.addDart(api.byLabel.D20);
+ assert.ok(api.state.game.winner,'match finished');
+ const history=JSON.parse(storage.get('checkout-lab-history-v1'));
+ assert.equal(history.length,1);
+ assert.equal(history[0].winner,'A');
+ api.undo();
+ assert.equal(JSON.parse(storage.get('checkout-lab-history-v1')).length,0);
+});
+
+test('dart-by-dart input finishes on a double and busts on a single',()=>{
+ const {api}=createApp();
+ api.state.names=['A','B'];api.state.mode=301;api.startGame();
+ api.state.game.players[0].score=40;
+ api.addDart(api.byLabel.S20);api.addDart(api.byLabel.S20);
+ assert.equal(api.state.game.history.at(-1).bust,true,'zero without a double is a bust');
+ assert.equal(api.state.game.players[0].score,40);
+});
+
+test('checkout quiz scores optimal and valid routes',()=>{
+ const {api}=createApp();
+ const t=api.ensureTraining();t.target=100;t.picks=[];t.result=null;
+ api.quizPick(api.byLabel.T20);api.quizPick(api.byLabel.D20);
+ assert.equal(t.result.valid,true);assert.equal(t.result.optimal,true);assert.equal(t.score,2);
+ t.target=100;t.picks=[];t.result=null;
+ api.quizPick(api.byLabel.S20);api.quizPick(api.byLabel.D20);api.quizPick(api.byLabel.D20);
+ assert.equal(t.result.valid,true);assert.equal(t.result.optimal,false);assert.equal(t.score,3);
+ t.target=100;t.picks=[];t.result=null;
+ api.quizPick(api.byLabel.T20);api.quizPick(api.byLabel.S20);api.quizPick(api.byLabel.S20);
+ assert.equal(t.result.valid,false);assert.equal(t.streak,0);
+});
