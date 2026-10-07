@@ -10,28 +10,28 @@
 
 /* ---------- Tokens ---------- */
 :root{
- --bg:#08111d;
- --glow:#15294a;
- --glow2:#0f2133;
- --head:#060d17;
- --surface:#0d1828;
- --surface-top:#122239;
- --surface2:#111f33;
- --surface3:#18294a;
- --row:#0f1c2f;
- --row-on:linear-gradient(90deg,#1a2a44,#122039 70%);
- --well:#060d17;
- --key:#14243b;
- --line:#223756;
- --line-strong:#32507a;
- --text:#eef2f7;
- --muted:#a9b8ca;
- --faint:#7c90a9;
- --acc:#e2b44b;
- --acc-strong:linear-gradient(180deg,#d8ae4d,#bf9233);
+ --bg:#111316;
+ --glow:#1b1e23;
+ --glow2:#16181c;
+ --head:#0d0f12;
+ --surface:#16191d;
+ --surface-top:#1a1d22;
+ --surface2:#1c1f24;
+ --surface3:#24282e;
+ --row:#17191d;
+ --row-on:linear-gradient(90deg,#24272d,#1b1e22 70%);
+ --well:#0e1013;
+ --key:#1f2328;
+ --line:#2a2e35;
+ --line-strong:#3b414a;
+ --text:#e8e9eb;
+ --muted:#aab0b8;
+ --faint:#80868f;
+ --acc:#d9b25a;
+ --acc-strong:linear-gradient(180deg,#d4ad58,#bb9240);
  --acc-ink:#120e06;
- --acc-soft:rgba(226,180,75,.15);
- --big:#ecd59c;
+ --acc-soft:rgba(217,178,90,.14);
+ --big:#e6d3a6;
  --red:#e25a6c;
  --red-solid:#c9485b;
  --red-soft:rgba(226,90,108,.14);
@@ -39,9 +39,9 @@
  --green-soft:rgba(69,192,143,.14);
  --t-col:#ef8a97;
  --d-col:#6fd8a9;
- --bull-col:#e2b44b;
- --db-a:#122036;--db-b:#24364f;--db-ra:#1a2a42;--db-rb:#2c3f5c;--db-num:#8095b0;--db-bull:#2c3f5c;
- --topbar:rgba(8,17,29,.84);
+ --bull-col:#d9b25a;
+ --db-a:#1a1d22;--db-b:#2a2e35;--db-ra:#22262c;--db-rb:#343941;--db-num:#8a9099;--db-bull:#343941;
+ --topbar:rgba(17,19,22,.86);
  --shadow:0 18px 40px rgba(0,0,0,.32);
  --shadow-pop:0 28px 80px rgba(0,0,0,.6);
  --radius:10px;
@@ -103,7 +103,7 @@ h1,h2,h3,p{margin:0}
 .mobile-menu-button{display:none}
 
 /* ---------- Mobile menu ---------- */
-.mobile-menu-backdrop{position:fixed;inset:0;z-index:55;background:rgba(2,6,12,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:fade-in .15s ease both}
+.mobile-menu-backdrop{position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:fade-in .15s ease both}
 .mobile-menu{position:fixed;z-index:58;left:10px;right:10px;top:calc(var(--topbar-h) + env(safe-area-inset-top) + 8px);max-height:calc(100dvh - var(--topbar-h) - env(safe-area-inset-top) - 20px);overflow:auto;padding:8px;border-radius:12px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-pop);animation:sheet-down .18s cubic-bezier(.2,.8,.2,1) both}
 .mm-links,.mm-group{display:grid;gap:2px}
 .mm-group{margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
@@ -365,7 +365,7 @@ kbd{font:500 11px/1 var(--font);padding:3px 6px;border-radius:4px;border:1px sol
 .empty-state p{color:var(--muted);max-width:360px;margin-bottom:12px;font-size:16px}
 
 /* ---------- Dialogs ---------- */
-.modal-backdrop,.drawer-backdrop{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(2,6,12,.66);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:fade-in .15s ease both}
+.modal-backdrop,.drawer-backdrop{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:fade-in .15s ease both}
 .checkout-modal,.settings-panel,.history-drawer{width:min(520px,100%);max-height:calc(100dvh - 40px);overflow:auto;padding:24px;border-radius:12px;box-shadow:var(--shadow-pop);animation:pop-in .2s cubic-bezier(.2,.8,.2,1) both}
 .checkout-modal h2,.settings-head h2{margin:8px 0 6px;font:600 30px/1.1 var(--display);text-transform:uppercase;letter-spacing:.02em}
 .checkout-modal>p{color:var(--muted);font-size:15px;margin-bottom:18px}
@@ -402,11 +402,11 @@ html[data-theme="light"] .confirm-selected-double{color:#fff}
 .drawer-list{max-height:60dvh}
 
 /* ---------- Game moments: broadcast banner ---------- */
-.game-moment{position:fixed;z-index:120;left:0;right:0;top:44%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 20px 20px;background:linear-gradient(90deg,transparent,rgba(6,13,23,.94) 18%,rgba(6,13,23,.94) 82%,transparent);border-top:2px solid var(--acc);border-bottom:2px solid var(--acc);color:var(--acc);text-align:center;pointer-events:none;transform:translateY(-50%);animation:moment-banner 1s cubic-bezier(.2,.85,.2,1) both;overflow:hidden}
+.game-moment{position:fixed;z-index:120;left:0;right:0;top:44%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 20px 20px;background:linear-gradient(90deg,transparent,rgba(14,16,19,.95) 18%,rgba(14,16,19,.95) 82%,transparent);border-top:2px solid var(--acc);border-bottom:2px solid var(--acc);color:var(--acc);text-align:center;pointer-events:none;transform:translateY(-50%);animation:moment-banner 1s cubic-bezier(.2,.85,.2,1) both;overflow:hidden}
 .game-moment::before{content:"";position:absolute;top:0;bottom:0;left:-30%;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);animation:moment-sweep 1s ease-out both}
-.gm-who{font:600 17px/1 var(--font);letter-spacing:0.06em;text-transform:uppercase;color:#eef2f7;margin-bottom:6px}
+.gm-who{font:600 17px/1 var(--font);letter-spacing:0.06em;text-transform:uppercase;color:#e8e9eb;margin-bottom:6px}
 .gm-label{font:600 clamp(72px,11vw,150px)/.9 var(--display);letter-spacing:.02em}
-.game-moment::after{display:block;margin-top:10px;font:600 15px/1 var(--font);letter-spacing:0.06em;color:#a9b8ca}
+.game-moment::after{display:block;margin-top:10px;font:600 15px/1 var(--font);letter-spacing:0.06em;color:#aab0b8}
 .game-moment.max{color:var(--acc)}
 .game-moment.max::after{content:"МАКСИМУМ"}
 html[lang="en"] .game-moment.max::after{content:"MAXIMUM"}
@@ -614,7 +614,7 @@ body.focus-mode .mobile-game{height:100dvh;padding-top:calc(8px + env(safe-area-
  .double-grid.compact{grid-template-columns:repeat(4,minmax(0,1fr))}
  .drawer-list{max-height:65dvh}
  .gm-label{font-size:clamp(64px,22vw,110px)}
- .game-moment{background:rgba(6,13,23,.95)}
+ .game-moment{background:rgba(14,16,19,.96)}
 
  .site-guide-links{padding:20px 14px calc(28px + env(safe-area-inset-bottom))}
  .update-toast{left:12px;right:12px;justify-content:space-between}
