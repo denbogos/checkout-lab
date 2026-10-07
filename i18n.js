@@ -39,7 +39,10 @@ const exact={
 'Почему 169 нельзя закрыть?':'Why can’t 169 be checked out?','169 относится к «bogey numbers»: за три дротика с обязательным последним удвоением корректного маршрута нет.':'169 is a bogey number: there is no valid three-dart route that finishes on a double.',
 'Как найти нужный остаток?':'How do I find a score?','Введи число в поле поиска сверху. Таблица сразу оставит только нужную карточку и варианты закрытия.':'Enter the number in the search field above. The table will immediately show that score and its checkout options.',
 'Маршрут единственный?':'Is there only one route?','Нет. Для многих остатков существует несколько правильных вариантов. Checkout Lab показывает основной и несколько запасных маршрутов.':'No. Many scores have several valid routes. Checkout Lab shows a primary route and several alternatives.',
-'бесплатный счётчик для дартса 301/501':'free 301/501 darts scorer','Основная навигация':'Main navigation'
+'бесплатный счётчик для дартса 301/501':'free 301/501 darts scorer',
+'Подсказки закрытий':'Checkout hints','Маршруты Double Out от 2 до 170':'Double Out routes from 2 to 170','До 8 игроков':'Up to 8 players','Очередь, леги и статистика':'Turn order, legs and statistics','Работает офлайн':'Works offline','Установи на телефон как приложение':'Install it on your phone as an app',
+'Double Out · Bull разрешён':'Double Out · Bull allowed','История матча':'Match history','Закрыть историю':'Close history','Закрыть настройки':'Close settings','Введите число от 61 до 170.':'Enter a number from 61 to 170.','Удалить цифру':'Delete digit','Вернуть отменённый подход':'Redo visit',
+'Основная навигация':'Main navigation'
 };
 
 function detect(){
@@ -77,6 +80,7 @@ function dynamic(s){
  if((m=s.match(/^ХОД · (.+)$/)))return `TURN · ${m[1]}`;
  if((m=s.match(/^ПРОСМОТР · (.+)$/)))return `PREVIEW · ${m[1]}`;
  if((m=s.match(/^Ничего не найдено$/)))return 'Nothing found';
+ if((m=s.match(/^(\d+) · Double Out · (\d+) подходов$/)))return `${m[1]} · Double Out · ${m[2]} visits`;
  if((m=s.match(/^Звук: (вкл|выкл)$/)))return `Sound: ${m[1]==='вкл'?'on':'off'}`;
  if((m=s.match(/^Вибрация: (вкл|выкл)$/)))return `Vibration: ${m[1]==='вкл'?'on':'off'}`;
  if((m=s.match(/^Экран не гаснет: (да|нет)$/)))return `Keep screen awake: ${m[1]==='да'?'yes':'no'}`;
