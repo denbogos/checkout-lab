@@ -47,7 +47,7 @@ test('beta online pages stay out of search indexes',()=>{
 
 test('service worker caches only successful same-origin responses',()=>{
  const source=readFileSync(resolve(root,'sw.js'),'utf8');
- assert.match(source,/CACHE=`\$\{CACHE_PREFIX\}v3\.0\.0-beta\.3`/);
+ assert.match(source,/CACHE=`\$\{CACHE_PREFIX\}v3\.0\.0-beta\.4`/);
  assert.match(source,/url\.origin!==self\.location\.origin/);
  assert.match(source,/response\?\.ok&&response\.type==='basic'/);
  assert.match(source,/path\.startsWith\('\/en\/'\)\?'\/en\/index\.html':'\/index\.html'/);
@@ -73,11 +73,16 @@ test('online beta uses a pinned SDK and shareable private rooms',()=>{
  assert.match(ui,/CheckoutOnline\.inviteUrl\(\)/);
  assert.match(ui,/fallback:'Резервная синхронизация'/);
  assert.match(ui,/yourTurn:'ВАШ ХОД'/);
- assert.match(ui,/class="primary submit-visit"/);
+ assert.match(ui,/class="primary online-submit"/);
+ assert.match(ui,/online-desktop-game/);
+ assert.match(ui,/online-mobile-game/);
+ assert.match(ui,/data-key=/);
  const css=readFileSync(resolve(root,'online.css'),'utf8');
  assert.match(css,/\.playerbox \.remaining/);
  assert.match(css,/\.turn-banner/);
  assert.match(css,/\.visitline input\{height:92px/);
+ assert.match(css,/\.online-desktop-game/);
+ assert.match(css,/\.online-mobile-game/);
  assert.doesNotMatch(core,/MutationObserver/);
 });
 
