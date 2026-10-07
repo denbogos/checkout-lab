@@ -165,3 +165,95 @@ test('checkout quiz scores optimal and valid routes',()=>{
  api.quizPick(api.byLabel.T20);api.quizPick(api.byLabel.S20);api.quizPick(api.byLabel.S20);
  assert.equal(t.result.valid,false);assert.equal(t.streak,0);
 });
+
+test('computer levels land near their target three-dart averages',()=>{
+ const {api}=createApp();
+ let seed=7;const rand=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+ for(const level of api.BOT_LEVELS){
+  let points=0,darts=0;
+  for(let leg=0;leg<400;leg++){let left=501;for(let guard=0;left>0&&guard<120;guard++){const hits=api.botVisit(left,level.sigma,rand),total=hits.reduce((s,h)=>s+h.value,0),after=left-total,last=hits.at(-1);darts+=hits.length;if(!(after<0||after===1||(after===0&&!last.isDouble))){points+=total;left=after;}}}
+  const average=points/darts*3;
+  assert.ok(Math.abs(average-level.avg)<6,`${level.name}: ${average.toFixed(1)} vs ${level.avg}`);
+ }
+});
+
+test('computer never aims at a dart that would leave 1',()=>{
+ const {api}=createApp();
+ for(let score=2;score<=501;score++)for(let darts=1;darts<=3;darts++){const aim=api.botAim(score,darts);assert.ok(score-aim.value!==1&&score-aim.value>=0,`${score}/${darts}: ${aim.label}`);}
+});
+
+test('undo skips the computer visit back to the human turn',()=>{
+ const {api}=createApp();
+ api.state.names=['Me'];api.state.mode=301;api.state.botLevel=3;api.state.legs=1;api.startGame();
+ api.state.visitValue='60';api.requestVisitSubmit();
+ assert.equal(api.isBotTurn(),true);
+ api.addDart(api.byLabel.T20,true);api.addDart(api.byLabel.S20,true);api.addDart(api.byLabel.S1,true);
+ assert.equal(api.isBotTurn(),false);
+ api.state.lastSubmitAt=0;api.undo();
+ assert.equal(api.state.game.history.length,0,'both the bot visit and my visit are undone');
+ assert.equal(api.isBotTurn(),false);
+ api.state.lastSubmitAt=0;api.state.visitValue='45';api.requestVisitSubmit();
+ api.state.lastSubmitAt=0;api.state.visitValue='45';api.requestVisitSubmit();
+ assert.equal(api.state.game.history.length,1,'human input is ignored during the computer turn');
+});
+
+test('sets: winning a set resets legs and the match ends on sets',()=>{
+ const {api}=createApp();
+ api.state.names=['A','B'];api.state.mode=301;api.state.legs=2;api.state.sets=2;api.state.botLevel=0;api.startGame();
+ const g=()=>api.state.game;
+ for(const who of [0,0,0]){checkout(api,who);}
+ assert.equal(g().players[0].sets,1);
+ assert.equal(g().winner,null);
+ checkout(api,0);
+ assert.equal(g().players[0].sets,2);
+ assert.equal(g().winner,g().players[0].id);
+ assert.equal(g().players[0].legsWon,4);
+});
+
+test('cricket marks, points and leg win',()=>{
+ const {api}=createApp();
+ api.state.names=['A','B'];api.state.mode='cricket';api.state.legs=1;api.startGame();
+ const g=()=>api.state.game,b=api.byLabel;
+ api.altDart(b.T20);api.altDart(b.T20);api.altDart(b.S20);
+ assert.equal(g().players[0].marks[20],3);
+ assert.equal(g().players[0].points,80,'four extra marks on open 20 score 80');
+ assert.equal(g().active,1);
+ api.altDart(b.T20);api.altDart(b.S20);
+ assert.equal(g().players[1].points,0,'20 is closed for everyone — no points');
+ api.altDart(b.MISS);
+ for(const n of [19,18,17,16,15]){api.altDart(b['T'+n]);api.altDart(b.MISS);api.altDart(b.MISS);api.altFinishTurn?.();api.altDart(b.MISS);api.altDart(b.MISS);api.altDart(b.MISS);}
+ api.altDart(b.BULL);api.altDart(b['25']);
+ assert.equal(g().winner,g().players[0].id);
+});
+
+test('around the clock finishes after the bull',()=>{
+ const {api}=createApp();
+ api.state.names=['Solo'];api.state.mode='clock';api.state.legs=1;api.startGame();
+ for(let i=0;i<20;i++)api.altDart(true);
+ assert.equal(api.state.game.players[0].target,21);
+ assert.equal(api.state.game.winner,null);
+ api.altDart(true);
+ assert.equal(api.state.game.winner,api.state.game.players[0].id);
+});
+
+test('121 checkout and Bob\'s 27 training rules',()=>{
+ const {api}=createApp();
+ api.ensureTraining();
+ api.c121Dart(api.byLabel.T20);api.c121Dart(api.byLabel.T11);api.c121Dart(api.byLabel.D14);
+ assert.equal(api.state.training.c121.result.ok,true);
+ const t=api.state.training;t.c121=null;
+ api.c121Dart(api.byLabel.T20);api.c121Dart(api.byLabel.T20);
+ assert.equal(t.c121.left,121,'bust returns to the visit start');
+ assert.equal(t.c121.used,3);
+ api.bobsMark(0);assert.equal(t.bob.score,25);
+ api.bobsMark(2);assert.equal(t.bob.score,33);
+});
+
+test('imported history is sanitised',()=>{
+ const {api}=createApp();
+ const m=api.cleanSummary({id:'x',at:5,start:'<img>',players:[{name:'<b>A</b>',color:'red;background:url(x)',darts:'12',total:300}]});
+ assert.equal(m.players[0].color,'#888888');
+ assert.equal(m.start,0);
+ assert.equal(m.players[0].darts,12);
+ assert.equal(api.cleanSummary({id:5,players:[]}),null);
+});
