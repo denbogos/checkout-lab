@@ -257,3 +257,88 @@ test('imported history is sanitised',()=>{
  assert.equal(m.players[0].darts,12);
  assert.equal(api.cleanSummary({id:5,players:[]}),null);
 });
+
+function winMatch(api){
+ for(let k=0;k<12&&!api.state.game.winner;k++){const g=api.state.game,p=g.players[g.active];p.score=2;api.applyRecordedVisit(g,{playerId:p.id,hits:[{label:'D1',value:2,isDouble:true}],total:2,bust:false,checkout:true,dartCount:1});}
+ api.save();
+}
+
+test('knockout tournament: byes, advancing winners and a champion',()=>{
+ const {api}=createApp();
+ const d=api.tDraft();d.names=['A','B','C','D','E'];d.shuffle=false;d.legs=2;d.format='knockout';
+ api.createTournament();
+ const t=()=>api.state.tournament;
+ assert.equal(t().matches.filter(m=>m.round===1&&m.score==='bye').length,3,'5 players in an 8-bracket get 3 byes');
+ for(let guard=0;guard<10&&t().champion==null;guard++){
+  const m=t().matches.find(x=>x.a!=null&&x.b!=null&&x.a>=0&&x.b>=0&&x.winner==null);
+  api.playTournamentMatch(m.id);
+  assert.equal(api.state.game.players.map(p=>p.name).join(),[t().players[m.a].name,t().players[m.b].name].join());
+  winMatch(api);
+  assert.match(t().matches.find(x=>x.id===m.id).score,/^(2:[01]|[01]:2)$/);
+ }
+ assert.notEqual(t().champion,null);
+ assert.equal(t().matches.filter(m=>m.score&&m.score!=='bye').length,4,'5 players need 4 real matches');
+ assert.equal(api.state.names.join(),'Даня,Соперник','setup names are restored');
+});
+
+test('round robin tournament: every pair plays once and the table ranks by wins',()=>{
+ const {api}=createApp();
+ const d=api.tDraft();d.names=['A','B','C','D'];d.shuffle=false;d.legs=1;d.format='league';
+ api.createTournament();
+ const t=api.state.tournament,pairs=new Set(t.matches.map(m=>[m.a,m.b].sort().join('-')));
+ assert.equal(t.matches.length,6);assert.equal(pairs.size,6);
+ for(const m of [...t.matches]){api.playTournamentMatch(m.id);winMatch(api);}
+ const table=api.leagueTable(api.state.tournament);
+ assert.equal(table.reduce((s,r)=>s+r.won,0),6);
+ assert.ok(table[0].won>=table[1].won);
+ assert.equal(api.state.tournament.champion,table[0].i);
+});
+
+test('shanghai: points per round, winner after round 7 and instant shanghai',()=>{
+ const {api}=createApp();
+ api.state.names=['A','B'];api.state.mode='shanghai';api.state.legs=1;api.startGame();
+ const g=()=>api.state.game;
+ api.altDart(3);api.altDart(0);api.altDart(1);
+ assert.equal(g().players[0].points,4);
+ api.altDart(0);api.altDart(0);api.altDart(0);
+ assert.equal(g().round,2);
+ api.altDart(1);api.altDart(2);api.altDart(3);
+ assert.equal(g().winner,g().players[0].id,'S2 D2 T2 is a shanghai');
+ api.state.names=['A','B'];api.startGame();
+ for(let i=0;i<7*6;i++)api.altDart(i%6<3?1:0);
+ assert.equal(g().winner,g().players[0].id);
+});
+
+test('killer: become a killer, take lives, last player standing wins',()=>{
+ const {api}=createApp();
+ api.state.names=['A','B'];api.state.mode='killer';api.state.legs=1;api.startGame();
+ const g=()=>api.state.game,[a,b]=g().players;
+ api.altDart(b.num);assert.equal(g().players[1].lives,3,'not a killer yet — no effect');
+ api.altDart(a.num);assert.equal(g().players[0].killer,true);
+ api.altDart(b.num);assert.equal(g().players[1].lives,2);
+ api.altDart(null);api.altDart(null);api.altDart(null);
+ api.altDart(b.num);api.altDart(b.num);
+ assert.equal(g().winner,g().players[0].id);
+});
+
+test('double in: darts before the opening double score nothing',()=>{
+ const {api}=createApp();
+ api.state.names=['A'];api.state.mode=501;api.state.doubleIn=true;api.state.botLevel=0;api.state.sets=0;api.startGame();
+ const b=api.byLabel;
+ assert.equal(api.needsDoubleIn(),true);
+ api.addDart(b.T20);api.addDart(b.D10);api.addDart(b.T20);
+ assert.equal(api.state.game.players[0].score,501-80);
+ assert.equal(api.state.game.players[0].opened,true);
+});
+
+test('cricket bot goes for open numbers, then scores when behind',()=>{
+ const {api}=createApp();
+ api.state.names=['A'];api.state.mode='cricket';api.state.botLevel=3;api.startGame();
+ const g=api.state.game,bot=g.players[1];
+ assert.equal(bot.bot,3);
+ assert.equal(api.cricketBotAim(g,bot).label,'T20');
+ bot.marks[20]=3;g.players[0].points=40;
+ assert.equal(api.cricketBotAim(g,bot).label,'T20','behind and 20 still open for the opponent');
+ g.players[0].marks[20]=3;
+ assert.equal(api.cricketBotAim(g,bot).label,'T19');
+});
