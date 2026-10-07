@@ -62,3 +62,31 @@ body{background:radial-gradient(1000px 480px at 10% -10%,var(--bg-glow),transpar
  .calc-row{flex-direction:column}
  .calc-row input{flex:none;width:100%}
 }
+/* Checkout pages (/checkout/N.html) and glossary */
+.seo-content .route-main{padding:0;margin:12px 0;flex-wrap:wrap}
+.co-route{margin:6px 0 18px!important}
+.co-route .route-hit{font-size:clamp(34px,6vw,56px);min-width:96px;padding:2px 18px}
+.co-route i{font-size:28px}
+.co-none{font:600 clamp(30px,5vw,44px)/1.1 var(--display);text-transform:uppercase;color:var(--red)}
+.co-steps{list-style:none;padding:0;margin:0;display:grid;gap:8px;counter-reset:step}
+.co-steps li{display:grid;grid-template-columns:auto 76px 1fr auto;align-items:center;gap:14px;padding:12px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);counter-increment:step}
+.co-steps li::before{content:counter(step);font:600 15px/1 var(--font);color:var(--muted)}
+.co-steps li span{color:var(--text);font-size:16px}
+.co-steps li em{font-style:normal;color:var(--muted);font-size:15px;white-space:nowrap}
+.co-steps .route-hit{font-size:24px;min-width:0}
+.co-alts{display:grid;gap:4px}
+.co-alts .route-hit{font-size:22px;min-width:56px}
+.co-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:36px 0 8px;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.co-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.co-chips a{min-width:46px;padding:7px 10px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--text);text-align:center;text-decoration:none;font:500 16px/1 var(--display)}
+.co-chips a:hover{border-color:var(--acc);color:var(--acc)}
+.terms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0}
+.terms dt{font:500 20px/1.2 var(--display);letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px;color:var(--text)}
+.terms dd{margin:0;color:var(--muted);line-height:1.6;font-size:16px}
+@media(max-width:768px){
+ .co-steps li{grid-template-columns:auto 64px 1fr;row-gap:4px}
+ .co-steps li em{grid-column:3}
+ .co-nav{flex-wrap:wrap}
+ .co-chips{order:3;width:100%}
+ .terms{grid-template-columns:1fr}
+}

@@ -320,6 +320,8 @@ kbd{font:500 11px/1 var(--font);padding:3px 6px;border-radius:4px;border:1px sol
 .checkout-card{display:grid;grid-template-columns:84px minmax(0,1fr);align-items:stretch;overflow:hidden;border-radius:8px;border:1px solid var(--line);background:var(--row);scroll-margin-top:160px;transition:border-color .15s ease}
 .checkout-card:hover{border-color:var(--line-strong)}
 .checkout-card[hidden]{display:none}
+a.checkout-number{text-decoration:none;transition:color .15s ease}
+a.checkout-number:hover{color:var(--acc)}
 .checkout-number{display:grid;place-items:center;background:var(--head);border-right:1px solid var(--line);font:600 34px/1 var(--display);color:var(--big)}
 .routes{display:grid;gap:10px;align-content:center;min-width:0;padding:14px 16px}
 .main-route,.alt-route{display:grid;gap:5px}
