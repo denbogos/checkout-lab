@@ -4,8 +4,8 @@
 
 # Checkout Lab
 
-**Счётчик для дартса 301 / 501 в стиле ТВ-трансляции**<br>
-Подсказки закрытий Double Out, статистика матча, до 8 игроков и полноценный офлайн-режим.
+**Счётчик для дартса 301 / 501 и Cricket в стиле ТВ-трансляции**<br>
+Подсказки закрытий Double Out, игра против компьютера, тренировки, статистика и полноценный офлайн-режим.
 
 [![Открыть сайт](https://img.shields.io/badge/checkoutlab.ru-%D0%BE%D1%82%D0%BA%D1%80%D1%8B%D1%82%D1%8C-c9a24a?style=for-the-badge)](https://checkoutlab.ru/)
 [![English](https://img.shields.io/badge/English-version-3a414c?style=for-the-badge)](https://checkoutlab.ru/en/)
@@ -27,7 +27,10 @@
 | | |
 |---|---|
 | 🎯 **Игры 301 / 501** | и свой стартовый счёт от 2 до 5001, Double Out, Bull разрешён |
-| 👥 **До 8 игроков** | матч до 1–7 легов, очередь и смена начинающего в каждом леге |
+| 👥 **До 8 игроков** | матч до 1–7 легов или сетов, очередь и смена начинающего в каждом леге |
+| 🏏 **Cricket** | табло отметок 15–20 и Bull, очки, MPR, до 8 игроков |
+| 🕐 **Around the Clock** | по кругу от 1 до 20 и Bull — для одного или компании |
+| 🤖 **Игра против компьютера** | бот 5 уровней (средний ≈35…95), бросает по настоящей геометрии мишени |
 | 🧭 **Подсказки закрытий** | основной маршрут и запасные варианты; план по дротикам и маршрут на мишени |
 | 📺 **Табло как в трансляции** | леги, средний набор, 180, последний подход, дротики в леге, лучшее закрытие |
 | 🎉 **События 180 / BUST / LEG** | анимированная плашка с именем игрока, звук и вибрация по желанию |
@@ -35,8 +38,8 @@
 | ✏️ **Правка и отмена** | Undo / Redo, исправление или удаление последнего подхода |
 | 🛡️ **Проверка ввода** | невозможные суммы за три дротика, BUST, выбор удвоения при закрытии |
 | 📴 **Офлайн и PWA** | устанавливается на телефон и ПК, работает без интернета |
-| 🏋️ **Тренировка** | квиз «назови закрытие» и круг по удвоениям с процентом попаданий |
-| 🗂️ **История матчей** | статистика за всё время по каждому игроку, последние матчи |
+| 🏋️ **Тренировка** | квиз «назови закрытие», круг по удвоениям, Bob's 27 и 121 Checkout |
+| 🗂️ **История матчей** | статистика за всё время, экспорт и импорт в файл, быстрый выбор недавних игроков |
 | 🎯 **Ввод по дротикам** | второй режим ввода — каждый дротик (S/D/T, 25, Bull) вместо суммы подхода |
 | 🎙️ **Голос диктора** | объявляет очки, 180, перебор и остаток для закрытия |
 | 📤 **Поделиться результатом** | картинка со счётом и статистикой — в Telegram, WhatsApp и т. д. |
@@ -94,10 +97,13 @@
 | [Калькулятор закрытий](https://checkoutlab.ru/checkout-calculator.html) | [Checkout calculator](https://checkoutlab.ru/en/checkout-calculator.html) |
 | [Счётчик 501](https://checkoutlab.ru/darts-501.html) · [301](https://checkoutlab.ru/darts-301.html) | [501](https://checkoutlab.ru/en/darts-501.html) · [301](https://checkoutlab.ru/en/darts-301.html) |
 | [Правила Double Out](https://checkoutlab.ru/double-out.html) | [Double Out rules](https://checkoutlab.ru/en/double-out.html) |
+| [Крикет в дартс](https://checkoutlab.ru/darts-cricket.html) | [Cricket darts](https://checkoutlab.ru/en/darts-cricket.html) |
+| [Тренировки в дартс](https://checkoutlab.ru/darts-training.html) | [Darts practice games](https://checkoutlab.ru/en/darts-training.html) |
 | [Термины дартса](https://checkoutlab.ru/darts-terms.html) | [Darts terms](https://checkoutlab.ru/en/darts-terms.html) |
 | [Закрытие 170](https://checkoutlab.ru/checkout/170.html) … [2](https://checkoutlab.ru/checkout/2.html) — страница на каждый остаток | [170 checkout](https://checkoutlab.ru/en/checkout/170.html) … |
 
 У каждой страницы свой canonical, `hreflang` и мета-теги для поисковиков.
+После каждого обновления `main` workflow **IndexNow** сообщает Яндексу и Bing, какие страницы изменились.
 
 ## Технологии
 
@@ -120,7 +126,7 @@
 ├── checkout-table.html   таблица закрытий 2–170
 ├── *.html + seo.css      справочные страницы
 ├── checkout/             страницы закрытий 2–170 (генерируются)
-├── tools/                генератор SEO-страниц и sitemap
+├── tools/                генератор SEO-страниц, sitemap и IndexNow
 ├── fonts/                Oswald и Roboto Condensed (SIL OFL)
 └── tests/                тесты логики игры и сайта
 ```

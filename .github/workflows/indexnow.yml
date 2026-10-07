@@ -1,0 +1,36 @@
+name: IndexNow
+
+# After a push to main, ask Yandex and Bing to re-crawl the changed pages.
+on:
+  push:
+    branches: [main]
+    paths: ['**.html', 'sitemap.xml']
+  workflow_dispatch:
+    inputs:
+      all:
+        description: 'Submit every URL from sitemap.xml'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Wait for GitHub Pages to publish
+        run: sleep 120
+      - name: Submit URLs
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.all }}" = "true" ]; then
+            node tools/indexnow.mjs --all
+          else
+            git diff --name-only --diff-filter=AM HEAD~1 HEAD -- '*.html' | xargs -r node tools/indexnow.mjs
+          fi

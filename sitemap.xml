@@ -50,6 +50,20 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://checkoutlab.ru/darts-terms.html"/>
   </url>
   <url>
+    <loc>https://checkoutlab.ru/darts-cricket.html</loc>
+    <lastmod>2026-10-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://checkoutlab.ru/darts-cricket.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://checkoutlab.ru/en/darts-cricket.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://checkoutlab.ru/darts-cricket.html"/>
+  </url>
+  <url>
+    <loc>https://checkoutlab.ru/darts-training.html</loc>
+    <lastmod>2026-10-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://checkoutlab.ru/darts-training.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://checkoutlab.ru/en/darts-training.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://checkoutlab.ru/darts-training.html"/>
+  </url>
+  <url>
     <loc>https://checkoutlab.ru/checkout/170.html</loc>
     <lastmod>2026-10-07</lastmod>
     <xhtml:link rel="alternate" hreflang="ru" href="https://checkoutlab.ru/checkout/170.html"/>
@@ -1280,6 +1294,20 @@
     <xhtml:link rel="alternate" hreflang="ru" href="https://checkoutlab.ru/darts-terms.html"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://checkoutlab.ru/en/darts-terms.html"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://checkoutlab.ru/darts-terms.html"/>
+  </url>
+  <url>
+    <loc>https://checkoutlab.ru/en/darts-cricket.html</loc>
+    <lastmod>2026-10-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://checkoutlab.ru/darts-cricket.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://checkoutlab.ru/en/darts-cricket.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://checkoutlab.ru/darts-cricket.html"/>
+  </url>
+  <url>
+    <loc>https://checkoutlab.ru/en/darts-training.html</loc>
+    <lastmod>2026-10-07</lastmod>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://checkoutlab.ru/darts-training.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://checkoutlab.ru/en/darts-training.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://checkoutlab.ru/darts-training.html"/>
   </url>
   <url>
     <loc>https://checkoutlab.ru/en/checkout/170.html</loc>

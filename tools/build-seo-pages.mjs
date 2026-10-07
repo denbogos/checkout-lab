@@ -2,6 +2,7 @@
 //   checkout/2.html … checkout/170.html   (RU)
 //   en/checkout/2.html … en/checkout/170.html (EN)
 //   darts-terms.html, en/darts-terms.html (glossary)
+//   darts-cricket.html, darts-training.html (+ en/) — game modes and practice routines
 //   sitemap.xml
 // Routes come from app.js itself, so the pages always match the in-game hints.
 // Run: npm run build:seo
@@ -18,9 +19,9 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const write=(path,html)=>{const file=resolve(ROOT,path);mkdirSync(dirname(file),{recursive:true});writeFileSync(file,html);};
 
 const T={
- ru:{home:'',locale:'ru_RU',nav:[['darts-501.html','Счётчик 501'],['checkout-calculator.html','Калькулятор закрытий'],['checkout-table.html','Таблица'],['darts-terms.html','Термины']],lang:'EN',
+ ru:{home:'',locale:'ru_RU',nav:[['darts-501.html','Счётчик 501'],['checkout-calculator.html','Калькулятор закрытий'],['checkout-table.html','Таблица'],['darts-cricket.html','Крикет'],['darts-training.html','Тренировки'],['darts-terms.html','Термины']],lang:'EN',
   ogAlt:'Checkout Lab — счётчик дартса 301/501'},
- en:{home:'en/',locale:'en_US',nav:[['darts-501.html','501 scorer'],['checkout-calculator.html','Checkout calculator'],['checkout-table.html','Checkout table'],['darts-terms.html','Darts terms']],lang:'RU',
+ en:{home:'en/',locale:'en_US',nav:[['darts-501.html','501 scorer'],['checkout-calculator.html','Checkout calculator'],['checkout-table.html','Checkout table'],['darts-cricket.html','Cricket'],['darts-training.html','Practice'],['darts-terms.html','Darts terms']],lang:'RU',
   ogAlt:'Checkout Lab — 301/501 darts scorer'}
 };
 
@@ -36,7 +37,7 @@ function page({lang,path,altPath,title,description,body,jsonld=[]}){
 <link rel="canonical" href="${SITE}${path}"><link rel="alternate" hreflang="ru" href="${SITE}${ru}"><link rel="alternate" hreflang="en" href="${SITE}${en}"><link rel="alternate" hreflang="x-default" href="${SITE}${ru}">
 <meta property="og:type" content="article"><meta property="og:site_name" content="Checkout Lab"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description)}"><meta property="og:url" content="${SITE}${path}"><meta property="og:locale" content="${t.locale}">
 <meta property="og:image" content="${SITE}og-image.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${t.ogAlt}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="${SITE}og-image.jpg">
-<link rel="icon" href="${root}favicon-48.png" type="image/png" sizes="48x48"><link rel="stylesheet" href="${root}styles.css"><link rel="stylesheet" href="${root}seo.css">
+<link rel="icon" href="${root}favicon-48.png" type="image/png" sizes="48x48"><link rel="stylesheet" href="${root}styles.css"><link rel="stylesheet" href="${root}seo.css"><script src="/metrika.js" async></script>
 ${jsonld.map(j=>`<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
 </head><body><nav class="seo-nav"><a class="brand" href="${home}" aria-label="Checkout Lab"><span class="brand-mark"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></span><span class="brand-name">Checkout<b>Lab</b></span></a><div class="seo-links">${links}</div><a class="lang" href="${langHref}">${t.lang}</a></nav>
 <main class="seo-content">${body}</main></body></html>
@@ -122,11 +123,65 @@ function termsPage(lang){
  return page({lang,path,altPath,title,description,body,jsonld});
 }
 
+
+/* ---------- game guides ---------- */
+const card=([h,p])=>`<article class="seo-card"><h3>${esc(h)}</h3><p>${p}</p></article>`;
+function guidePage(lang,{slug,title,description,eyebrow,h1,lead,cta,aside,sections,faq}){
+ const ru=lang==='ru',path=`${ru?'':'en/'}${slug}`,altPath=`${ru?'en/':''}${slug}`;
+ const body=`<section class="hero"><div><span class="eyebrow">${eyebrow}</span><h1>${h1}</h1><p>${lead}</p><div class="seo-actions">${cta.map(([href,label],i)=>`<a class="${i?'seo-secondary':'seo-primary'}" href="${href}">${label}</a>`).join('')}</div></div><aside class="seo-card">${aside}</aside></section>
+<section>${sections.join('\n')}
+<h2>${ru?'Вопросы':'FAQ'}</h2><div class="seo-faq">${faq.map(([q,a])=>`<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div></section>`;
+ const jsonld=[{'@context':'https://schema.org','@type':'FAQPage',mainEntity:faq.map(([q,a])=>({'@type':'Question',name:q,acceptedAnswer:{'@type':'Answer',text:a}}))},
+  {'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'Checkout Lab',item:SITE+(ru?'':'en/')},{'@type':'ListItem',position:2,name:h1,item:SITE+path}]}];
+ return page({lang,path,altPath,title,description,body,jsonld});
+}
+const GUIDES={
+ 'darts-cricket.html':{
+  ru:{title:'Крикет в дартс: правила и счётчик онлайн | Checkout Lab',description:'Правила крикета в дартс простыми словами: сектора 15–20 и Bull, отметки, очки и победа. Бесплатный счётчик Cricket на телефоне и ПК, до 8 игроков.',
+   eyebrow:'CRICKET · 15–20 · BULL',h1:'Крикет в дартс',lead:'Cricket — вторая по популярности игра в дартс после 501. Нужно первым «закрыть» сектора 15–20 и Bull и при этом не отстать по очкам. Checkout Lab ведёт счёт отметок и очков за вас.',
+   cta:[['./?mode=cricket','Открыть счётчик Cricket'],['./darts-training.html','Тренировки']],
+   aside:'<h3>Коротко о правилах</h3><p>В игре участвуют только 15, 16, 17, 18, 19, 20 и Bull. Каждый сектор нужно закрыть тремя отметками: одиночный — 1, удвоение — 2, утроение — 3. Внешний Bull — 1 отметка, центр — 2.</p>',
+   sections:['<h2>Как играть в крикет</h2><div class="seo-grid three">'+[['1. Отметки','Каждое попадание в сектор 15–20 или Bull даёт отметки: одиночный сектор — одну, удвоение — две, утроение — три. Три отметки закрывают сектор.'],['2. Очки','Если сектор закрыт у вас, но открыт хотя бы у одного соперника, лишние попадания приносят очки по стоимости сектора. Bull стоит 25.'],['3. Победа','Лег выигрывает тот, кто первым закрыл все семь секторов и при этом имеет столько же очков, сколько соперники, или больше.']].map(card).join('')+'</div>',
+    '<h2>Пример подхода</h2><div class="score-example"><b>T20</b><span>закрыл 20 →</span><b>S20</b><span>+20 очков →</span><b>D19</b><span>2 отметки на 19</span></div><p>После такого подхода у игрока закрыт сектор 20, 20 очков и две отметки на 19. Соперник может «отрезать» очки, закрыв 20 у себя.</p>',
+    '<h2>Что умеет счётчик Cricket</h2><div class="seo-grid three">'+[['Табло отметок','Классические знаки /, X и Ⓧ для каждого игрока, закрытые всеми сектора гаснут.'],['MPR','Среднее число отметок за раунд (marks per round) — главный показатель уровня в крикете.'],['Отмена и леги','Отмена любого дротика, матч до нескольких легов, до 8 игроков, офлайн.']].map(card).join('')+'</div>'],
+   faq:[['Какие сектора используются в крикете?','Только 15, 16, 17, 18, 19, 20 и Bull. Попадания в остальные сектора не считаются.'],['Сколько попаданий нужно, чтобы закрыть сектор?','Три отметки: одиночный сектор даёт одну, удвоение — две, утроение — три. Например, одно утроение сразу закрывает сектор.'],['Как в крикете начисляются очки?','Попадания по сектору, который вы уже закрыли, а соперник ещё нет, приносят очки по стоимости сектора: 15–20 или 25 за Bull.'],['Кто побеждает в крикете?','Тот, кто первым закрыл все семь секторов и имеет не меньше очков, чем каждый соперник.'],['Что такое MPR?','Marks per round — среднее количество отметок за подход из трёх дротиков. 2,0+ — уверенный любитель, 3,0+ — сильный игрок.']]},
+  en:{title:'Cricket darts rules and free online scorer | Checkout Lab',description:'Cricket darts rules in plain English: numbers 15–20 and Bull, marks, points and how to win. Free Cricket scoreboard for phone and desktop, up to 8 players.',
+   eyebrow:'CRICKET · 15–20 · BULL',h1:'Cricket darts',lead:'Cricket is the most popular darts game after 501. Be the first to close 15–20 and the Bull without falling behind on points. Checkout Lab tracks every mark and point for you.',
+   cta:[['./?mode=cricket','Open Cricket scorer'],['./darts-training.html','Practice games']],
+   aside:'<h3>Rules in short</h3><p>Only 15, 16, 17, 18, 19, 20 and Bull count. Each number is closed with three marks: a single is 1, a double 2, a treble 3. The outer bull is one mark, the bullseye two.</p>',
+   sections:['<h2>How to play Cricket</h2><div class="seo-grid three">'+[['1. Marks','Every hit on 15–20 or the Bull scores marks: single — one, double — two, treble — three. Three marks close the number.'],['2. Points','Once you have closed a number, extra hits score its value while at least one opponent still has it open. The Bull is worth 25.'],['3. Winning','The leg goes to the first player to close all seven numbers with as many points as every opponent or more.']].map(card).join('')+'</div>',
+    '<h2>Example visit</h2><div class="score-example"><b>T20</b><span>closes 20 →</span><b>S20</b><span>+20 points →</span><b>D19</b><span>2 marks on 19</span></div><p>After this visit the player has 20 closed, 20 points and two marks on 19. The opponent can stop the scoring by closing 20 too.</p>',
+    '<h2>Cricket scorer features</h2><div class="seo-grid three">'+[['Mark board','Classic /, X and Ⓧ marks for every player; numbers closed by everyone fade out.'],['MPR','Marks per round — the key Cricket stat, calculated live.'],['Undo and legs','Undo any dart, play several legs, up to 8 players, works offline.']].map(card).join('')+'</div>'],
+   faq:[['Which numbers are used in Cricket?','Only 15, 16, 17, 18, 19, 20 and the Bull. Other numbers do not count.'],['How many hits close a number?','Three marks: a single gives one, a double two, a treble three. One treble closes a number straight away.'],['How do you score points in Cricket?','Hits on a number you have closed but an opponent has not score its value: 15–20, or 25 for the Bull.'],['Who wins a game of Cricket?','The first player to close all seven numbers with at least as many points as every opponent.'],['What is MPR in darts?','Marks per round — the average number of marks per three-dart visit. 2.0+ is a solid amateur, 3.0+ is a strong player.']]}
+ },
+ 'darts-training.html':{
+  ru:{title:'Тренировки в дартс: Around the Clock, Bob’s 27, 121 | Checkout Lab',description:'Упражнения для дартса с подсчётом очков: Around the Clock (круг 1–20), Bob’s 27 для удвоений, 121 Checkout для закрытий, игра против компьютера. Бесплатно и офлайн.',
+   eyebrow:'ТРЕНИРОВКА',h1:'Тренировки в дартс',lead:'Четыре проверенных упражнения, которые используют игроки любого уровня. Счётчик ведёт очки, рекорды и процент попаданий — вам остаётся только бросать.',
+   cta:[['./?train=bobs','Начать тренировку'],['./?mode=clock','Around the Clock']],
+   aside:'<h3>Что тренировать</h3><p><strong>Точность</strong> — Around the Clock. <strong>Удвоения</strong> — Bob’s 27 и круг по удвоениям. <strong>Закрытия</strong> — 121 Checkout и квиз маршрутов. <strong>Игровой ритм</strong> — матч 501 против компьютера.</p>',
+   sections:['<h2>Around the Clock</h2><p>Попадите по очереди в каждый сектор от 1 до 20, затем в Bull. Подходит любое попадание — одиночное, удвоение или утроение. Можно играть одному на время или с друзьями: побеждает тот, кто первым попал в Bull. Отличное упражнение на точность и знание мишени.</p>',
+    '<h2>Bob’s 27</h2><p>Классика для удвоений, придуманная тренером Бобом Андерсоном. Старт — 27 очков. Бросайте по три дротика в D1, D2 … D20 и Bull. Каждое попадание прибавляет стоимость удвоения, ни одного попадания — вычитает её. Счёт 0 или меньше — игра окончена. Максимум — 1437.</p><div class="score-example"><b>27</b><span>D1 ×0 → </span><b>25</b><span>D2 ×2 →</span><b>33</b><span>D3 ×1 →</span><b>39</b></div>',
+    '<h2>121 Checkout</h2><p>Закройте 121 за 9 дротиков (три подхода) с Double Out. Получилось — цель растёт на 1, нет — снижается на 1, но не ниже 121. Приложение подсказывает маршрут и фиксирует ваш рекорд.</p>',
+    '<h2>Игра против компьютера</h2><div class="seo-grid three">'+[['Пять уровней','Новичок (≈35), любитель (≈50), клубный (≈65), сильный (≈80) и профи (≈95 очков за подход).'],['Честный бросок','Бот бросает по настоящей геометрии мишени с разбросом — мажет мимо удвоений, ловит перебор и закрывает как живой игрок.'],['Сеты и леги','Матч 301/501 до нужного числа легов или сетов, статистика и история.']].map(card).join('')+'</div>'],
+   faq:[['Как тренировать удвоения в дартс?','Bob’s 27 и круг по удвоениям: по три дротика в каждое удвоение от D1 до Bull. Следите за процентом попаданий и рекордом.'],['Что такое Around the Clock?','Упражнение и игра: нужно по порядку попасть в сектора от 1 до 20 и в Bull. Подходит для разминки и детей.'],['Какой максимальный счёт в Bob’s 27?','1437 — если все три дротика попадают в каждое удвоение от D1 до D20 и в Bull.'],['Можно ли играть в дартс с компьютером?','Да, в Checkout Lab есть бот для 301/501 с пятью уровнями: от новичка до профи.']]},
+  en:{title:'Darts practice games: Around the Clock, Bob’s 27, 121 | Checkout Lab',description:'Darts practice routines with scoring: Around the Clock, Bob’s 27 for doubles, 121 Checkout for finishing, and 501 against the computer. Free and offline.',
+   eyebrow:'PRACTICE',h1:'Darts practice games',lead:'Four proven routines used by players of every level. The scorer keeps your points, records and hit rate — you just throw.',
+   cta:[['./?train=bobs','Start practice'],['./?mode=clock','Around the Clock']],
+   aside:'<h3>What to practise</h3><p><strong>Accuracy</strong> — Around the Clock. <strong>Doubles</strong> — Bob’s 27 and the doubles round. <strong>Finishing</strong> — 121 Checkout and the route quiz. <strong>Match rhythm</strong> — 501 against the computer.</p>',
+   sections:['<h2>Around the Clock</h2><p>Hit every number from 1 to 20 in order, then the Bull. Any segment counts — single, double or treble. Play solo against the clock or with friends: the first to hit the Bull wins. Great for accuracy and learning the board.</p>',
+    '<h2>Bob’s 27</h2><p>The classic doubles routine created by coach Bob Anderson. Start on 27. Throw three darts at D1, D2 … D20 and the Bull. Each hit adds the double’s value; no hits subtracts it. Reach 0 or below and the game is over. The maximum is 1437.</p><div class="score-example"><b>27</b><span>D1 ×0 →</span><b>25</b><span>D2 ×2 →</span><b>33</b><span>D3 ×1 →</span><b>39</b></div>',
+    '<h2>121 Checkout</h2><p>Check out 121 within 9 darts (three visits), Double Out. Succeed and the target goes up by one; miss and it drops by one, never below 121. The app shows the route and tracks your best.</p>',
+    '<h2>Play against the computer</h2><div class="seo-grid three">'+[['Five levels','Beginner (≈35), amateur (≈50), club (≈65), strong (≈80) and pro (≈95 three-dart average).'],['Realistic throws','The bot throws on real board geometry with scatter — it misses doubles, busts and checks out like a real player.'],['Sets and legs','301/501 matches to any number of legs or sets, with stats and history.']].map(card).join('')+'</div>'],
+   faq:[['How do I practise doubles in darts?','Bob’s 27 and the doubles round: three darts at every double from D1 to Bull. Track your hit rate and best score.'],['What is Around the Clock in darts?','A practice game where you hit 1 to 20 in order and finish on the Bull. Great as a warm-up and for kids.'],['What is the maximum score in Bob’s 27?','1437 — all three darts on every double from D1 to D20 and the Bull.'],['Can I play darts against a computer?','Yes. Checkout Lab has a 301/501 bot with five levels from beginner to pro.']]}
+ }
+};
+
 /* ---------- build ---------- */
 for(let n=2;n<=170;n++){write(`checkout/${n}.html`,checkoutPage(n,'ru'));write(`en/checkout/${n}.html`,checkoutPage(n,'en'));}
 write('darts-terms.html',termsPage('ru'));write('en/darts-terms.html',termsPage('en'));
+for(const [slug,langs] of Object.entries(GUIDES)){write(slug,guidePage('ru',{slug,...langs.ru}));write(`en/${slug}`,guidePage('en',{slug,...langs.en}));}
 
-const base=['','checkout-table.html','checkout-calculator.html','darts-501.html','darts-301.html','double-out.html','darts-terms.html'];
+const base=['','checkout-table.html','checkout-calculator.html','darts-501.html','darts-301.html','double-out.html','darts-terms.html','darts-cricket.html','darts-training.html'];
 for(let n=170;n>=2;n--)base.push(`checkout/${n}.html`);
 const urls=[];
 for(const [lang,prefix] of [['ru',''],['en','en/']])for(const p of base){
@@ -134,4 +189,4 @@ for(const [lang,prefix] of [['ru',''],['en','en/']])for(const p of base){
  urls.push(`  <url>\n    <loc>${loc}</loc>\n    <lastmod>${TODAY}</lastmod>\n    <xhtml:link rel="alternate" hreflang="ru" href="${ru}"/>\n    <xhtml:link rel="alternate" hreflang="en" href="${en}"/>\n    <xhtml:link rel="alternate" hreflang="x-default" href="${ru}"/>\n  </url>`);
 }
 write('sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>\n`);
-console.log(`Built ${169*2} checkout pages, 2 glossary pages, sitemap with ${urls.length} URLs`);
+console.log(`Built ${169*2} checkout pages, 2 glossary pages, 4 guide pages, sitemap with ${urls.length} URLs`);
