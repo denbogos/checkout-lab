@@ -342,3 +342,16 @@ test('cricket bot goes for open numbers, then scores when behind',()=>{
  g.players[0].marks[20]=3;
  assert.equal(api.cricketBotAim(g,bot).label,'T19');
 });
+
+test('double in: the opening visit cannot be 180 (max 170)',()=>{
+ const {api}=createApp();
+ api.state.names=['A'];api.state.mode=501;api.state.doubleIn=true;api.state.botLevel=0;api.state.sets=0;api.startGame();
+ for(const v of [180,177,171,168,165,162,159,1])assert.equal(api.DOUBLE_IN_TOTALS.has(v),false,String(v));
+ for(const v of [0,2,170,160,100,50])assert.equal(api.DOUBLE_IN_TOTALS.has(v),true,String(v));
+ api.state.lastSubmitAt=0;api.state.visitValue='180';api.requestVisitSubmit();
+ assert.equal(api.state.game.history.length,0,'180 is rejected before opening');
+ api.state.lastSubmitAt=0;api.state.visitValue='170';api.requestVisitSubmit();
+ assert.equal(api.state.game.players[0].score,331);
+ api.state.lastSubmitAt=0;api.state.visitValue='180';api.requestVisitSubmit();
+ assert.equal(api.state.game.players[0].score,151,'after opening 180 is allowed again');
+});
