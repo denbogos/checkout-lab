@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {existsSync,readFileSync} from 'node:fs';
 import {dirname,resolve} from 'node:path';
 import test from 'node:test';
+import vm from 'node:vm';
 
 const root=resolve(new URL('..',import.meta.url).pathname);
 const htmlFiles=[
@@ -40,7 +41,7 @@ test('score event labels are localized in English',()=>{
 
 test('service worker caches only successful same-origin responses',()=>{
  const source=readFileSync(resolve(root,'sw.js'),'utf8');
- assert.match(source,/CACHE=`\$\{CACHE_PREFIX\}v3\.1\.0`/);
+ assert.match(source,/CACHE=`\$\{CACHE_PREFIX\}v3\.1\.1`/);
  assert.match(source,/url\.origin!==self\.location\.origin/);
  assert.match(source,/response\?\.ok&&response\.type==='basic'/);
  assert.match(source,/path\.startsWith\('\/en\/'\)\?'\/en\/index\.html':'\/index\.html'/);
@@ -68,4 +69,14 @@ test('RU and EN manifests share one PWA identity',()=>{
  assert.equal(ru.id,'./');
  assert.equal(en.id,'/');
  assert.equal(en.scope,'/');
+});
+
+test('fixed-language pages keep their SEO title and description',()=>{
+ const source=readFileSync(resolve(root,'i18n.js'),'utf8');
+ const context={document:{documentElement:{dataset:{lang:'ru'},lang:'ru'},title:'SEO title',querySelector:()=>{throw new Error('meta must not change');}},localStorage:{getItem:()=>null,setItem:()=>{}},navigator:{language:'ru'},window:{}};
+ vm.runInNewContext(source,vm.createContext(context));
+ for(const [language,page] of [['ru','app'],['en','app'],['ru','table'],['en','table']]){
+  context.window.CheckoutI18n.applyMeta(language,page);
+  assert.equal(context.document.title,'SEO title');
+ }
 });
