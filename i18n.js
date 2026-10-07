@@ -116,6 +116,8 @@ function apply(root=document,language=detect()){
  });
 }
 function applyMeta(language,page='app'){
+ // Pages with a fixed language already ship their own SEO title and description.
+ const fixed=document.documentElement?.dataset?.lang;if(fixed==='ru'||fixed==='en')return;
  if(language!=='en'){
   if(page==='table'){
    document.title='Таблица закрытий в дартсе 2–170 — Checkout Lab';
