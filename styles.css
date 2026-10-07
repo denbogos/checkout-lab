@@ -395,6 +395,7 @@ html[data-theme="light"] .confirm-selected-double{color:#fff}
 .setting-row>span:nth-child(2){flex:1;min-width:0}
 .setting-row b{display:block;font:500 17px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase}
 .setting-row small{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+.setting-row .voice-summary{color:var(--faint);font-size:12px}
 .setting-row em{font:500 13px/1 var(--display);font-style:normal;letter-spacing:.1em;padding:7px 10px;border-radius:5px;border:1px solid var(--line);background:var(--surface2)}
 .setting-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);color:var(--acc);flex:none}
 .history-drawer{padding:20px}
