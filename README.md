@@ -27,10 +27,12 @@
 | | |
 |---|---|
 | 🎯 **Игры 301 / 501** | и свой стартовый счёт от 2 до 5001, Double Out, Bull разрешён |
-| 👥 **До 8 игроков** | матч до 1–7 легов или сетов, очередь и смена начинающего в каждом леге |
+| 👥 **До 8 игроков** | матч до 1–7 легов или сетов, Double In, очередь и смена начинающего в каждом леге |
 | 🏏 **Cricket** | табло отметок 15–20 и Bull, очки, MPR, до 8 игроков |
 | 🕐 **Around the Clock** | по кругу от 1 до 20 и Bull — для одного или компании |
-| 🤖 **Игра против компьютера** | бот 5 уровней (средний ≈35…95), бросает по настоящей геометрии мишени |
+| 🎲 **Shanghai и Killer** | игры для компании: 7 раундов с мгновенной победой и игра на выбывание с жизнями |
+| 🏆 **Турнир** | сетка на 3–16 игроков: плей-офф или круговой, победители проходят дальше сами |
+| 🤖 **Игра против компьютера** | бот 5 уровней (средний ≈35…95) в 301/501 и Cricket, бросает по настоящей геометрии мишени |
 | 🧭 **Подсказки закрытий** | основной маршрут и запасные варианты; план по дротикам и маршрут на мишени |
 | 📺 **Табло как в трансляции** | леги, средний набор, 180, последний подход, дротики в леге, лучшее закрытие |
 | 🎉 **События 180 / BUST / LEG** | анимированная плашка с именем игрока, звук и вибрация по желанию |
@@ -99,6 +101,8 @@
 | [Правила Double Out](https://checkoutlab.ru/double-out.html) | [Double Out rules](https://checkoutlab.ru/en/double-out.html) |
 | [Крикет в дартс](https://checkoutlab.ru/darts-cricket.html) | [Cricket darts](https://checkoutlab.ru/en/darts-cricket.html) |
 | [Тренировки в дартс](https://checkoutlab.ru/darts-training.html) | [Darts practice games](https://checkoutlab.ru/en/darts-training.html) |
+| [Игры: Shanghai, Killer, Double In](https://checkoutlab.ru/darts-games.html) | [Darts games](https://checkoutlab.ru/en/darts-games.html) |
+| [Турнир по дартсу](https://checkoutlab.ru/darts-tournament.html) | [Darts tournament](https://checkoutlab.ru/en/darts-tournament.html) |
 | [Термины дартса](https://checkoutlab.ru/darts-terms.html) | [Darts terms](https://checkoutlab.ru/en/darts-terms.html) |
 | [Закрытие 170](https://checkoutlab.ru/checkout/170.html) … [2](https://checkoutlab.ru/checkout/2.html) — страница на каждый остаток | [170 checkout](https://checkoutlab.ru/en/checkout/170.html) … |
 

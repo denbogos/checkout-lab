@@ -174,6 +174,41 @@ const GUIDES={
     '<h2>Play against the computer</h2><div class="seo-grid three">'+[['Five levels','Beginner (≈35), amateur (≈50), club (≈65), strong (≈80) and pro (≈95 three-dart average).'],['Realistic throws','The bot throws on real board geometry with scatter — it misses doubles, busts and checks out like a real player.'],['Sets and legs','301/501 matches to any number of legs or sets, with stats and history.']].map(card).join('')+'</div>'],
    faq:[['How do I practise doubles in darts?','Bob’s 27 and the doubles round: three darts at every double from D1 to Bull. Track your hit rate and best score.'],['What is Around the Clock in darts?','A practice game where you hit 1 to 20 in order and finish on the Bull. Great as a warm-up and for kids.'],['What is the maximum score in Bob’s 27?','1437 — all three darts on every double from D1 to D20 and the Bull.'],['Can I play darts against a computer?','Yes. Checkout Lab has a 301/501 bot with five levels from beginner to pro.']]}
  }
+ ,'darts-tournament.html':{
+  ru:{title:'Турнирная сетка для дартса онлайн — плей-офф и круговой | Checkout Lab',description:'Бесплатная турнирная сетка для дартса на 3–16 игроков: плей-офф или круговой турнир, 501, 301 или Cricket. Матчи запускаются из сетки, победители проходят дальше сами.',
+   eyebrow:'ТУРНИР · 3–16 ИГРОКОВ',h1:'Турнир по дартсу',lead:'Соберите друзей или клуб: Checkout Lab построит сетку, проведёт жеребьёвку и сам переведёт победителей в следующий раунд. Каждый матч считается тем же счётчиком с подсказками закрытий.',
+   cta:[['./','Создать турнир'],['./darts-games.html','Другие игры']],
+   aside:'<h3>Два формата</h3><p><strong>Плей-офф</strong> — проигравший выбывает, при нечётном числе игроков часть проходит дальше без матча. <strong>Круговой</strong> — каждый играет с каждым, таблица по победам и разнице легов.</p>',
+   sections:['<h2>Как провести турнир</h2><div class="seo-grid three">'+[['1. Участники','Откройте «Турнир», впишите от 3 до 16 игроков, выберите 501, 301 или Cricket и число легов.'],['2. Сетка','Жеребьёвка расставит игроков. Нажмите «Играть» у любого готового матча — откроется обычный счётчик.'],['3. Победитель','После матча результат попадает в сетку, победитель проходит дальше. В конце — чемпион турнира.']].map(card).join('')+'</div>'],
+   faq:[['Сколько игроков может быть в турнире?','От 3 до 16. В плей-офф при числе игроков не равном 4, 8 или 16 сильнейшие по жребию проходят первый раунд без матча.'],['Как определяется победитель кругового турнира?','По числу побед, при равенстве — по разнице выигранных и проигранных легов.'],['Можно ли переиграть матч?','Да, результат можно сбросить, пока не сыгран следующий матч с участием победителя.'],['Нужен ли интернет?','Нет. Сетка хранится на устройстве и работает офлайн.']]},
+  en:{title:'Free darts tournament bracket — knockout and round robin | Checkout Lab',description:'Free darts tournament bracket for 3–16 players: knockout or round robin, 501, 301 or Cricket. Start matches from the bracket and winners advance automatically.',
+   eyebrow:'TOURNAMENT · 3–16 PLAYERS',h1:'Darts tournament',lead:'Gather your friends or club: Checkout Lab draws the bracket and moves winners on automatically. Every match uses the same scorer with checkout hints.',
+   cta:[['./','Create a tournament'],['./darts-games.html','More games']],
+   aside:'<h3>Two formats</h3><p><strong>Knockout</strong> — lose and you are out; with an uneven field some players get a bye. <strong>Round robin</strong> — everyone plays everyone, ranked by wins and leg difference.</p>',
+   sections:['<h2>How to run a tournament</h2><div class="seo-grid three">'+[['1. Players','Open “Tournament”, enter 3–16 players, pick 501, 301 or Cricket and the number of legs.'],['2. Bracket','The draw places everyone. Tap “Play” on any ready match to open the normal scorer.'],['3. Winner','Results go straight into the bracket and the winner advances. At the end you get a champion.']].map(card).join('')+'</div>'],
+   faq:[['How many players can join?','From 3 to 16. In a knockout with a field other than 4, 8 or 16, some players get a first-round bye.'],['How is a round robin decided?','By wins, then by leg difference.'],['Can a match be replayed?','Yes — clear the result as long as the winner has not played the next match yet.'],['Does it need internet?','No. The bracket is stored on your device and works offline.']]}
+ },
+ 'darts-games.html':{
+  ru:{title:'Игры в дартс: Shanghai, Killer, Double In — правила и счётчик | Checkout Lab',description:'Правила популярных игр в дартс для компании: Shanghai, Killer, Cricket, Around the Clock и 301 с Double In. Бесплатный счётчик для телефона и ПК.',
+   eyebrow:'ИГРЫ ДЛЯ КОМПАНИИ',h1:'Игры в дартс',lead:'Кроме 501 есть десятки игр, которые веселее в компании. Checkout Lab считает самые популярные из них — выбирайте режим на экране «Новая игра».',
+   cta:[['./?mode=shanghai','Играть в Shanghai'],['./?mode=killer','Играть в Killer']],
+   aside:'<h3>Что выбрать</h3><p><strong>Shanghai</strong> — быстрая игра на 7 раундов. <strong>Killer</strong> — на выбывание для 3+ игроков. <strong>Cricket</strong> — тактика. <strong>Double In</strong> — клубное правило для 301.</p>',
+   sections:['<h2>Shanghai</h2><p>Семь раундов: в первом бросают в 1, во втором — в 2 и так далее. Одиночный сектор приносит номер раунда, удвоение — вдвое больше, утроение — втрое. Если за один подход попасть в одиночный, удвоение и утроение номера раунда — это «Shanghai» и мгновенная победа. Иначе после 7 раундов побеждает тот, у кого больше очков.</p><div class="score-example"><b>S3</b><span>+3</span><b>D3</b><span>+6</span><b>T3</b><span>Shanghai!</span></div>',
+    '<h2>Killer</h2><p>Каждому игроку достаётся свой номер и три жизни. Сначала нужно попасть в удвоение своего номера — так игрок становится «киллером». После этого каждое попадание в удвоение соперника отнимает у него жизнь, а в своё — у себя. Побеждает последний, у кого остались жизни.</p>',
+    '<h2>Double In</h2><p>Вариант 301/501, в котором очки начинают считаться только после попадания в удвоение. Дротики до первого удвоения не засчитываются. Включается на экране «Новая игра» в поле «Начало».</p>',
+    '<h2>Ещё режимы</h2><p><a href="./darts-cricket.html">Cricket</a> · <a href="./darts-training.html">Around the Clock, Bob’s 27 и 121</a> · <a href="./darts-tournament.html">Турнир</a></p>'],
+   faq:[['Что такое Shanghai в дартс?','Игра на 7 раундов, где целью служит номер раунда. Одиночный, удвоение и утроение одного числа за подход — «Shanghai» и победа.'],['Как играть в Killer в дартс?','У каждого свой номер и 3 жизни. Попадите в своё удвоение, чтобы стать киллером, затем выбивайте жизни соперников попаданием в их удвоения.'],['Что значит Double In?','Очки начинают засчитываться только после попадания в удвоение. Обычно используется в 301.']]},
+  en:{title:'Darts games: Shanghai, Killer, Double In — rules and scorer | Checkout Lab',description:'Rules for popular party darts games: Shanghai, Killer, Cricket, Around the Clock and 301 Double In. Free scorer for phone and desktop.',
+   eyebrow:'PARTY GAMES',h1:'Darts games',lead:'Beyond 501 there are dozens of games that are more fun in a group. Checkout Lab scores the most popular ones — pick a mode on the New game screen.',
+   cta:[['./?mode=shanghai','Play Shanghai'],['./?mode=killer','Play Killer']],
+   aside:'<h3>Which one?</h3><p><strong>Shanghai</strong> — a quick 7-round game. <strong>Killer</strong> — elimination for 3+ players. <strong>Cricket</strong> — tactics. <strong>Double In</strong> — a club rule for 301.</p>',
+   sections:['<h2>Shanghai</h2><p>Seven rounds: round 1 targets 1, round 2 targets 2 and so on. A single scores the round number, a double twice that, a treble three times. Hit the single, double and treble of the target in one visit — a “Shanghai” — and you win instantly. Otherwise the highest score after 7 rounds wins.</p><div class="score-example"><b>S3</b><span>+3</span><b>D3</b><span>+6</span><b>T3</b><span>Shanghai!</span></div>',
+    '<h2>Killer</h2><p>Everyone gets a number and three lives. First hit the double of your own number to become a “killer”. After that every hit on an opponent’s double costs them a life — and on your own, one of yours. The last player with lives left wins.</p>',
+    '<h2>Double In</h2><p>A 301/501 variant where scoring only starts once you hit a double. Darts before the first double do not count. Turn it on under “Start” on the New game screen.</p>',
+    '<h2>More modes</h2><p><a href="./darts-cricket.html">Cricket</a> · <a href="./darts-training.html">Around the Clock, Bob’s 27 and 121</a> · <a href="./darts-tournament.html">Tournament</a></p>'],
+   faq:[['What is Shanghai in darts?','A 7-round game where the target is the round number. Single, double and treble of that number in one visit is a “Shanghai” and wins.'],['How do you play Killer darts?','Everyone has a number and 3 lives. Hit your own double to become a killer, then take lives by hitting opponents’ doubles.'],['What does Double In mean?','Scoring only starts after hitting a double. Common in 301.']]}
+ }
+
 };
 
 /* ---------- build ---------- */
@@ -181,7 +216,7 @@ for(let n=2;n<=170;n++){write(`checkout/${n}.html`,checkoutPage(n,'ru'));write(`
 write('darts-terms.html',termsPage('ru'));write('en/darts-terms.html',termsPage('en'));
 for(const [slug,langs] of Object.entries(GUIDES)){write(slug,guidePage('ru',{slug,...langs.ru}));write(`en/${slug}`,guidePage('en',{slug,...langs.en}));}
 
-const base=['','checkout-table.html','checkout-calculator.html','darts-501.html','darts-301.html','double-out.html','darts-terms.html','darts-cricket.html','darts-training.html'];
+const base=['','checkout-table.html','checkout-calculator.html','darts-501.html','darts-301.html','double-out.html','darts-terms.html','darts-cricket.html','darts-training.html','darts-tournament.html','darts-games.html'];
 for(let n=170;n>=2;n--)base.push(`checkout/${n}.html`);
 const urls=[];
 for(const [lang,prefix] of [['ru',''],['en','en/']])for(const p of base){
@@ -189,4 +224,4 @@ for(const [lang,prefix] of [['ru',''],['en','en/']])for(const p of base){
  urls.push(`  <url>\n    <loc>${loc}</loc>\n    <lastmod>${TODAY}</lastmod>\n    <xhtml:link rel="alternate" hreflang="ru" href="${ru}"/>\n    <xhtml:link rel="alternate" hreflang="en" href="${en}"/>\n    <xhtml:link rel="alternate" hreflang="x-default" href="${ru}"/>\n  </url>`);
 }
 write('sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>\n`);
-console.log(`Built ${169*2} checkout pages, 2 glossary pages, 4 guide pages, sitemap with ${urls.length} URLs`);
+console.log(`Built ${169*2} checkout pages, 2 glossary pages, 8 guide pages, sitemap with ${urls.length} URLs`);
