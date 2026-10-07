@@ -2,7 +2,7 @@
 body{background:radial-gradient(1000px 480px at 10% -10%,var(--bg-glow),transparent 60%),var(--bg)}
 .seo-nav{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:16px;height:64px;padding:0 max(clamp(16px,3vw,40px),calc((100vw - 1120px)/2));background:var(--topbar);backdrop-filter:saturate(1.4) blur(18px);-webkit-backdrop-filter:saturate(1.4) blur(18px);border-bottom:1px solid var(--line)}
 .seo-links{flex:1;display:flex;justify-content:flex-end;gap:4px;min-width:0}
-.seo-links a,.seo-nav .lang{display:inline-flex;align-items:center;height:38px;padding:0 13px;border-radius:7px;color:var(--muted);text-decoration:none;font:500 14px/1 var(--display);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;transition:color .15s ease,background .15s ease}
+.seo-links a,.seo-nav .lang{display:inline-flex;align-items:center;height:38px;padding:0 13px;border-radius:7px;color:var(--muted);text-decoration:none;font:600 16px/1 var(--font);letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;transition:color .15s ease,background .15s ease}
 .seo-links a:hover{color:var(--text);background:var(--surface2)}
 .seo-links a.active{color:var(--text);background:var(--surface3)}
 .seo-nav .lang{justify-content:center;width:40px;padding:0;border:1px solid var(--line);background:var(--surface);color:var(--text);font-size:12px;font-weight:800;letter-spacing:.04em}
@@ -20,7 +20,7 @@ body{background:radial-gradient(1000px 480px at 10% -10%,var(--bg-glow),transpar
 .seo-card p{font-size:15px}
 .hero .seo-card{border-top:3px solid var(--acc)}
 .seo-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
-.seo-primary,.seo-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:7px;font:600 15px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:background .15s ease,border-color .15s ease}
+.seo-primary,.seo-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:7px;font:600 17px/1 var(--font);letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:background .15s ease,border-color .15s ease}
 .seo-primary{background:var(--acc-strong);border:1px solid transparent;color:var(--acc-ink);box-shadow:0 10px 24px rgba(0,0,0,.25)}
 .seo-primary:hover{filter:brightness(1.07)}
 .seo-secondary{border:1px solid var(--line);color:var(--text);background:var(--surface)}
