@@ -47,7 +47,7 @@ test('beta online pages stay out of search indexes',()=>{
 
 test('service worker caches only successful same-origin responses',()=>{
  const source=readFileSync(resolve(root,'sw.js'),'utf8');
- assert.match(source,/CACHE=`\$\{CACHE_PREFIX\}v3\.0\.0-beta\.1`/);
+ assert.match(source,/CACHE=`\$\{CACHE_PREFIX\}v3\.0\.0-beta\.2`/);
  assert.match(source,/url\.origin!==self\.location\.origin/);
  assert.match(source,/response\?\.ok&&response\.type==='basic'/);
  assert.match(source,/path\.startsWith\('\/en\/'\)\?'\/en\/index\.html':'\/index\.html'/);
@@ -67,7 +67,11 @@ test('online beta uses a pinned SDK and shareable private rooms',()=>{
  assert.match(core,/p_visibility:'private'/);
  assert.match(core,/p_checkout_double/);
  assert.match(core,/if\(refreshPromise\)return refreshPromise/);
+ assert.match(core,/state\.realtimeStatus==='SUBSCRIBED'\?15000:2000/);
+ assert.match(core,/snapshotKey!==lastSnapshotKey/);
+ assert.match(core,/stopPolling\(\)/);
  assert.match(ui,/CheckoutOnline\.inviteUrl\(\)/);
+ assert.match(ui,/fallback:'Резервная синхронизация'/);
  assert.doesNotMatch(core,/MutationObserver/);
 });
 

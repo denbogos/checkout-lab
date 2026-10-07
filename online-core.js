@@ -2,7 +2,7 @@
 'use strict';
 const cfg=window.CHECKOUT_LAB_SUPABASE||{};
 const state={client:null,user:null,profile:null,match:null,players:[],visits:[],channel:null,presence:null,realtimeStatus:'OFFLINE',listeners:new Set()};
-let refreshPromise=null;
+let refreshPromise=null,pollTimer=null,pollGeneration=0,lastSnapshotKey='';
 const emit=()=>state.listeners.forEach(fn=>fn({...state}));
 const need=()=>{if(!state.client)throw new Error('Online backend is not configured yet.');return state.client};
 const roomFromUrl=()=>new URLSearchParams(location.search).get('room')?.trim().toUpperCase()||'';
@@ -33,7 +33,7 @@ async function openMatch(id){await leaveRealtime();await refreshMatch(id);const 
   .subscribe(status=>{state.realtimeStatus=status;emit()});
  state.presence=c.channel('match-presence-'+id,{config:{presence:{key:state.user.id}}});
  state.presence.on('presence',{event:'sync'},()=>emit()).subscribe(async status=>{if(status==='SUBSCRIBED')await state.presence.track({user_id:state.user.id,at:new Date().toISOString()})});
- emit();
+ startPolling(id);emit();
 }
 async function refreshMatch(id){
  if(refreshPromise)return refreshPromise;
@@ -41,12 +41,28 @@ async function refreshMatch(id){
   c.from('matches').select('*').eq('id',id).single(),
   c.from('match_players').select('*,profiles:user_id(username,display_name,avatar_url)').eq('match_id',id).order('seat'),
   c.from('visits').select('*').eq('match_id',id).order('id',{ascending:false}).limit(30)
- ]);if(m.error)throw m.error;if(p.error)throw p.error;if(v.error)throw v.error;state.match=m.data;state.players=p.data||[];state.visits=v.data||[];emit();return state.match})().finally(()=>{refreshPromise=null});
+ ]);if(m.error)throw m.error;if(p.error)throw p.error;if(v.error)throw v.error;
+  const players=p.data||[],visits=v.data||[];
+  const snapshotKey=[m.data.version,m.data.status,m.data.current_player_id,players.map(x=>`${x.user_id}:${x.remaining}:${x.legs_won}`).join(','),visits[0]?.id||0,visits.length].join('|');
+  state.match=m.data;state.players=players;state.visits=visits;
+  if(snapshotKey!==lastSnapshotKey){lastSnapshotKey=snapshotKey;emit()}
+  return state.match})().finally(()=>{refreshPromise=null});
  return refreshPromise;
 }
+function stopPolling(){if(pollTimer)clearTimeout(pollTimer);pollTimer=null;pollGeneration++}
+function startPolling(id){
+ stopPolling();const generation=pollGeneration;
+ const tick=async()=>{
+  if(generation!==pollGeneration||state.match?.id!==id)return;
+  try{await refreshMatch(id);state.lastError=''}catch(error){state.lastError=error.message;emit()}
+  if(generation!==pollGeneration||state.match?.id!==id)return;
+  pollTimer=setTimeout(tick,state.realtimeStatus==='SUBSCRIBED'?15000:2000);
+ };
+ pollTimer=setTimeout(tick,2000);
+}
 async function submitVisit(score,{dartsUsed=3,checkoutDouble=null,eventId=crypto.randomUUID()}={}){if(!state.match)throw new Error('Match is not open.');const {data,error}=await need().rpc('submit_online_visit',{p_match_id:state.match.id,p_score:Number(score),p_darts_used:Number(dartsUsed),p_checkout_double:checkoutDouble===null?null:Number(checkoutDouble),p_client_event_id:eventId});if(error)throw error;await refreshMatch(state.match.id);return data}
-async function leaveRealtime(){if(!state.client)return;if(state.channel){await state.client.removeChannel(state.channel);state.channel=null}if(state.presence){await state.client.removeChannel(state.presence);state.presence=null}state.realtimeStatus='OFFLINE'}
-async function leaveMatch(){await leaveRealtime();state.match=null;state.players=[];state.visits=[];setRoomUrl('');emit()}
+async function leaveRealtime(){stopPolling();if(!state.client)return;if(state.channel){await state.client.removeChannel(state.channel);state.channel=null}if(state.presence){await state.client.removeChannel(state.presence);state.presence=null}state.realtimeStatus='OFFLINE'}
+async function leaveMatch(){await leaveRealtime();state.match=null;state.players=[];state.visits=[];lastSnapshotKey='';setRoomUrl('');emit()}
 function inviteUrl(){if(!state.match)return '';const url=new URL(location.href);url.search='';url.searchParams.set('room',state.match.room_code);return url.href}
 function onlineUsers(){return state.presence?.presenceState?.()||{}}
 function subscribe(fn){state.listeners.add(fn);fn({...state});return()=>state.listeners.delete(fn)}
