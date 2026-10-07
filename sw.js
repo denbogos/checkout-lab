@@ -1,6 +1,6 @@
 const CACHE_PREFIX='checkout-lab-';
-const CACHE=`${CACHE_PREFIX}v3.0.0-beta.6`;
-const ASSETS=['/','/index.html','/styles.css','/auth.css','/i18n.js','/audio-engine.js','/app.js','/auth.js','/supabase-config.js','/manifest.webmanifest','/icon.svg','/favicon-48.png','/icon-192.png','/icon-512.png','/checkout-table.html','/seo.css','/checkout-calculator.html','/darts-501.html','/darts-301.html','/double-out.html','/online.html','/online.css','/online-core.js','/online-ui.js','/en/','/en/index.html','/en/manifest.webmanifest','/en/checkout-table.html','/en/checkout-calculator.html','/en/darts-501.html','/en/darts-301.html','/en/double-out.html','/en/online.html'];
+const CACHE=`${CACHE_PREFIX}v3.0.0-offline.1`;
+const ASSETS=['/','/index.html','/styles.css','/i18n.js','/audio-engine.js','/app.js','/manifest.webmanifest','/icon.svg','/favicon-48.png','/icon-192.png','/icon-512.png','/checkout-table.html','/seo.css','/checkout-calculator.html','/darts-501.html','/darts-301.html','/double-out.html','/en/','/en/index.html','/en/manifest.webmanifest','/en/checkout-table.html','/en/checkout-calculator.html','/en/darts-501.html','/en/darts-301.html','/en/double-out.html'];
 
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));
