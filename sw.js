@@ -1,5 +1,5 @@
 const CACHE_PREFIX='checkout-lab-';
-const CACHE=`${CACHE_PREFIX}v3.1.6`;
+const CACHE=`${CACHE_PREFIX}v3.1.7`;
 const ASSETS=['/','/index.html','/styles.css','/i18n.js','/audio-engine.js','/app.js','/manifest.webmanifest','/icon.svg','/favicon-48.png','/icon-192.png','/icon-512.png','/fonts/oswald-cyrillic.woff2','/fonts/oswald-latin.woff2','/fonts/roboto-condensed-cyrillic.woff2','/fonts/roboto-condensed-latin.woff2','/checkout-table.html','/seo.css','/checkout-calculator.html','/darts-501.html','/darts-301.html','/double-out.html','/en/','/en/index.html','/en/manifest.webmanifest','/en/checkout-table.html','/en/checkout-calculator.html','/en/darts-501.html','/en/darts-301.html','/en/double-out.html'];
 
 self.addEventListener('install',event=>{
