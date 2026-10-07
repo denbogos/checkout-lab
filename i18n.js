@@ -41,7 +41,8 @@ const exact={
 'Маршрут единственный?':'Is there only one route?','Нет. Для многих остатков существует несколько правильных вариантов. Checkout Lab показывает основной и несколько запасных маршрутов.':'No. Many scores have several valid routes. Checkout Lab shows a primary route and several alternatives.',
 'бесплатный счётчик для дартса 301/501':'free 301/501 darts scorer',
 'Подсказки закрытий':'Checkout hints','Маршруты Double Out от 2 до 170':'Double Out routes from 2 to 170','До 8 игроков':'Up to 8 players','Очередь, леги и статистика':'Turn order, legs and statistics','Работает офлайн':'Works offline','Установи на телефон как приложение':'Install it on your phone as an app',
-'Double Out · Bull разрешён':'Double Out · Bull allowed','История матча':'Match history','Закрыть историю':'Close history','Закрыть настройки':'Close settings','Введите число от 61 до 170.':'Enter a number from 61 to 170.','Удалить цифру':'Delete digit','Вернуть отменённый подход':'Redo visit',
+'Double Out · Bull разрешён':'Double Out · Bull allowed','начинал лег':'started leg','БРОСАЕТ':'THROWING','Леги':'Legs','Последний':'Last','Счёт':'Score','Лучшее закрытие':'Best checkout','лучшее закрытие':'best checkout','Дротиков в леге':'Darts this leg','Далее:':'Next:','История':'History',
+'МАРШРУТ НА МИШЕНИ':'ROUTE ON THE BOARD','КУДА ЦЕЛИТЬСЯ':'WHERE TO AIM','МИШЕНЬ':'BOARD','ОСТАТОК':'REMAINING','Запасные:':'Alternatives:','Бросает':'Throwing','Просмотр:':'Preview:','История матча':'Match history','Закрыть историю':'Close history','Закрыть настройки':'Close settings','Введите число от 61 до 170.':'Enter a number from 61 to 170.','Удалить цифру':'Delete digit','Вернуть отменённый подход':'Redo visit',
 'Основная навигация':'Main navigation'
 };
 
@@ -80,6 +81,10 @@ function dynamic(s){
  if((m=s.match(/^ХОД · (.+)$/)))return `TURN · ${m[1]}`;
  if((m=s.match(/^ПРОСМОТР · (.+)$/)))return `PREVIEW · ${m[1]}`;
  if((m=s.match(/^Ничего не найдено$/)))return 'Nothing found';
+ if((m=s.match(/^Подход (\d+) · 3 дротика$/)))return `Visit ${m[1]} · 3 darts`;
+ if((m=s.match(/^Дротик (\d)$/)))return `Dart ${m[1]}`;
+ if((m=s.match(/^до (\d+) лег(а|ов)$/)))return `first to ${m[1]} ${m[1]==='1'?'leg':'legs'}`;
+ if((m=s.match(/^для (.+)$/)))return `for ${m[1]}`;
  if((m=s.match(/^(\d+) · Double Out · (\d+) подходов$/)))return `${m[1]} · Double Out · ${m[2]} visits`;
  if((m=s.match(/^Звук: (вкл|выкл)$/)))return `Sound: ${m[1]==='вкл'?'on':'off'}`;
  if((m=s.match(/^Вибрация: (вкл|выкл)$/)))return `Vibration: ${m[1]==='вкл'?'on':'off'}`;
