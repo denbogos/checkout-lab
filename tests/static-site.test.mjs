@@ -47,7 +47,7 @@ test('beta online pages stay out of search indexes',()=>{
 
 test('service worker caches only successful same-origin responses',()=>{
  const source=readFileSync(resolve(root,'sw.js'),'utf8');
- assert.match(source,/CACHE=`\$\{CACHE_PREFIX\}v3\.0\.0-beta\.5`/);
+ assert.match(source,/CACHE=`\$\{CACHE_PREFIX\}v3\.0\.0-beta\.6`/);
  assert.match(source,/url\.origin!==self\.location\.origin/);
  assert.match(source,/response\?\.ok&&response\.type==='basic'/);
  assert.match(source,/path\.startsWith\('\/en\/'\)\?'\/en\/index\.html':'\/index\.html'/);
@@ -78,11 +78,14 @@ test('online beta uses a pinned SDK and shareable private rooms',()=>{
  assert.match(ui,/online-mobile-game/);
  assert.match(ui,/data-key=/);
  assert.match(ui,/checkoutAdvice/);
+ assert.match(ui,/routes\.map\(route=>'<strong>'/);
  assert.match(ui,/checkout-table\.html/);
  assert.match(ui,/showOnlineMoment/);
  assert.match(ui,/data-confirm-double/);
  assert.doesNotMatch(ui,/data-darts/);
  assert.doesNotMatch(ui,/data-double/);
+ assert.match(ui,/pendingCheckout=null;try\{button\.disabled=true;await CheckoutOnline\.submitVisit/);
+ assert.match(ui,/submitVisit\(score,\{dartsUsed:3,checkoutDouble\}\);render\(\)/);
  const css=readFileSync(resolve(root,'online.css'),'utf8');
  assert.match(css,/\.playerbox \.remaining/);
  assert.match(css,/\.turn-banner/);
