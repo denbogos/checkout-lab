@@ -4,7 +4,7 @@
 const STORAGE='checkout-lab-session-v1';
 const LEGACY_STORAGE='checkout-lab-game-v2';
 const SETTINGS='checkout-lab-settings-v3';
-const COLORS=['#e83f5b','#43d08a','#f7b844','#6aa7ff','#bd75ff','#ff7d4d'];
+const COLORS=['#cf6f7d','#68b394','#cfab62','#7fa2cf','#a790c9','#d08d68'];
 const BOGEY=new Set([169,168,166,165,163,162,159]);
 const preferredDoubles=['D20','D16','D18','D12','D10','D8','D14','D6','D4','D2','D1','BULL'];
 const canonical={
@@ -153,6 +153,7 @@ function validStoredVisit(visit,playerIds){
 function normalizeGame(game){
  if(!game||!integerBetween(game.startScore,2,5001)||!Array.isArray(game.players)||!integerBetween(game.players.length,1,8)||!integerBetween(game.active,0,game.players.length-1)||!integerBetween(game.legsToWin,1,99))return null;
  if(!game.players.every(player=>validStoredPlayer(player,game.startScore)))return null;
+ const legacy=['#e83f5b','#43d08a','#f7b844','#6aa7ff','#bd75ff','#ff7d4d'];game.players.forEach(player=>{const i=legacy.indexOf(player.color);if(i>=0)player.color=COLORS[i];});
  const playerIds=new Set(game.players.map(player=>player.id));if(playerIds.size!==game.players.length)return null;
  if(!Array.isArray(game.current)||game.current.length>3||!game.current.every(hit=>hit&&typeof hit.label==='string'&&Number.isFinite(Number(hit.value))))return null;
  if(!Array.isArray(game.history)||!game.history.every(visit=>validStoredVisit(visit,playerIds)))return null;
