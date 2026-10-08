@@ -3,6 +3,7 @@
 
 const SETTINGS='checkout-lab-settings-v3';
 const exact={
+"без бота":"no computer","Double Out":"Double Out",
 "← свайп — отмена":"← swipe to undo",
 "Реванш":"Rematch","Дротики":"Darts","Avg":"Avg",
 "Справочник":"Reference","Калькулятор закрытий":"Checkout calculator","Правила игр":"Game rules","Термины дартса":"Darts terms","Для компании":"Party games","Закрой 15–20 и Bull, набирай очки":"Close 15–20 and Bull, score points","По порядку от 1 до 20 и Bull":"1 to 20 in order, then Bull","7 раундов, S + D + T — победа":"7 rounds, S + D + T wins","Номер, 3 жизни, на выбывание":"A number, 3 lives, last one standing","Bob's 27, 121 Checkout, удвоения, квиз закрытий":"Bob's 27, 121 Checkout, doubles, checkout quiz",
@@ -96,6 +97,8 @@ function dynamic(s){
  if((m=s.match(/^Лучшие: (.+) · Слабые: (.+)$/)))return `Strongest: ${m[1]} · Weakest: ${m[2]}`;
  if((m=s.match(/^Подход (\d+) · 3 дротика$/)))return `Visit ${m[1]} · 3 darts`;
  if((m=s.match(/^Дротик (\d)$/)))return `Dart ${m[1]}`;
+ if((m=s.match(/^бот: (.+)$/)))return `computer: ${{'Новичок':'Beginner','Любитель':'Amateur','Клубный':'Club','Сильный':'Strong','Профи':'Pro'}[m[1]]||m[1]}`;
+ if((m=s.match(/^до (\d+) сет(а|ов), (\d+) в сете$/)))return `first to ${m[1]} sets, ${m[3]} legs per set`;
  if((m=s.match(/^(\d+) игроков$/)))return `${m[1]} players`;
  if((m=s.match(/^(\d+) из 16$/)))return `${m[1]} of 16`;
  if((m=s.match(/^Раунд (\d+)$/)))return `Round ${m[1]}`;
