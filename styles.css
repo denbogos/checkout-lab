@@ -1091,3 +1091,8 @@ a.mm-link{text-decoration:none;color:inherit}
  .wc .winner-actions>*{width:100%;min-height:46px;padding:0 10px;font-size:14px}
  .wc .winner-actions>.primary{grid-column:1/-1}
 }
+@media (max-width:880px) and (min-width:769px){
+ .topnav .nav-item>span{display:none}
+ .topnav .nav-item .ico{display:block!important;width:20px;height:20px}
+ .topnav .nav-item{padding:0 12px}
+}
