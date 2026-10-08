@@ -1132,3 +1132,21 @@ a.mm-link{text-decoration:none;color:inherit}
  .setup-card .train-link{display:none}
  .setup-page{padding-top:20px}
 }
+/* ---- Phone setup: compact intro, sticky start ---- */
+.pc-short{display:none}
+@media (max-width:768px){
+ .setup-page{gap:12px;padding-top:14px}
+ .setup-intro .kicker{display:none}
+ .setup-intro h1{font-size:30px;margin:0 0 4px;white-space:nowrap}
+ .setup-intro h1 br{display:none}
+ .setup-intro h1 .accent-line{margin-left:.25em}
+ .setup-intro>p,.setup-intro .feature-list{display:none}
+ .setup-intro .continue{margin-top:10px}
+ .pc-long{display:none}
+ .pc-short{display:block}
+ .party-card{min-height:58px}
+ .setup-card{overflow:visible}
+ .setup-card>.step:first-child{border-radius:var(--radius) var(--radius) 0 0}
+ .setup-card .start-button{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom));z-index:20;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+}
+@media (max-width:360px){.setup-intro h1{font-size:25px}}
