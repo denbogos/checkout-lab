@@ -3,6 +3,7 @@
 
 const SETTINGS='checkout-lab-settings-v3';
 const exact={
+"7 раундов":"7 rounds","3 жизни":"3 lives","15–20 и Bull":"15–20 and Bull",
 "без бота":"no computer","Double Out":"Double Out",
 "← свайп — отмена":"← swipe to undo",
 "Реванш":"Rematch","Дротики":"Darts","Avg":"Avg",

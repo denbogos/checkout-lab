@@ -1,5 +1,5 @@
 const CACHE_PREFIX='checkout-lab-';
-const CACHE=`${CACHE_PREFIX}v3.4.1`;
+const CACHE=`${CACHE_PREFIX}v3.4.2`;
 const ASSETS=['/','/index.html','/styles.css','/i18n.js','/audio-engine.js','/app.js','/manifest.webmanifest','/metrika.js','/icon.svg','/favicon-48.png','/icon-192.png','/icon-512.png','/fonts/oswald-cyrillic.woff2','/fonts/oswald-latin.woff2','/fonts/roboto-condensed-cyrillic.woff2','/fonts/roboto-condensed-latin.woff2','/checkout-table.html','/seo.css','/checkout-calculator.html','/darts-501.html','/darts-301.html','/double-out.html','/en/','/en/index.html','/en/manifest.webmanifest','/en/checkout-table.html','/en/checkout-calculator.html','/en/darts-501.html','/en/darts-301.html','/en/double-out.html','/darts-cricket.html','/darts-training.html','/en/darts-cricket.html','/en/darts-training.html','/darts-games.html','/darts-tournament.html','/en/darts-games.html','/en/darts-tournament.html'];
 
 self.addEventListener('install',event=>{
