@@ -255,6 +255,7 @@ function startGame(){
  const custom=Math.trunc(Number(state.customScore));const score=state.mode===0?Math.min(5001,Math.max(2,Number.isFinite(custom)?custom:501)):state.mode;
  const players=state.names.map(n=>n.trim()).filter(Boolean).map((n,i)=>newPlayer(n,i,score));if(!players.length)return;
  const level=BOT_LEVELS.find(l=>l.level===state.botLevel);if(level&&players.length<8)players.push({...newPlayer(state.language==='en'?`CPU · ${level.en}`:`Бот · ${level.name}`,players.length,score),bot:level.level});
+ track('match_start',{mode:state.mode===0?'custom':String(score),players:players.length,bot:level?.level||0,sets:Number(state.sets)||0,doubleIn:!!state.doubleIn});if(level)track('bot_match',{mode:String(score),level:level.level});
  const doubleIn=!!state.doubleIn;players.forEach(p=>{p.opened=!doubleIn;});
  state.game={id:id(),startScore:score,doubleIn,players,active:0,legStarter:0,legNumber:1,setNumber:1,setsToWin:Number(state.sets)||0,current:[],history:[],legsToWin:Number(state.legs)||1,winner:null};state.undo=[];state.redo=[];state.visitValue='';state.inputError='';state.previewPlayerId=null;state.screen='game';save();render();
 }
@@ -302,7 +303,10 @@ async function importHistory(file){
  }catch{window.alert?.(en?'This file is not a Checkout Lab history export.':'Это не файл истории Checkout Lab.');}
  render();
 }
-function syncHistory(){const g=state.game;if(!g?.id)return;const list=loadHistory(),i=list.findIndex(m=>m.id===g.id);if(g.winner){const summary=matchSummary(g);if(i>=0){summary.at=list[i].at;list[i]=summary;}else list.unshift(summary);}else if(i>=0)list.splice(i,1);else return;try{localStorage.setItem(HISTORY,JSON.stringify(list.slice(0,200)));}catch{}}
+// Yandex Metrika goals (JavaScript events). Silently does nothing offline or without the counter.
+function track(goal,params){try{window.ym?.(113542707,'reachGoal',goal,params);}catch{}}
+function gameMode(g){return g.type||(g.startScore===301||g.startScore===501?String(g.startScore):'custom');}
+function syncHistory(){const g=state.game;if(!g?.id)return;const list=loadHistory(),i=list.findIndex(m=>m.id===g.id);if(g.winner){const summary=matchSummary(g);if(i>=0){summary.at=list[i].at;list[i]=summary;}else{list.unshift(summary);track('match_finish',{mode:gameMode(g),bot:g.players.some(p=>p.bot),tournament:!!g.tm});}}else if(i>=0)list.splice(i,1);else return;try{localStorage.setItem(HISTORY,JSON.stringify(list.slice(0,200)));}catch{}}
 async function shareResult(){const g=state.game;if(!g?.winner)return;const en=state.language==='en',w=g.players.find(p=>p.id===g.winner),W=1200,H=630,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
  try{await Promise.all(['600 120px Oswald','500 40px Oswald','600 24px "Roboto Condensed"'].map(f=>document.fonts?.load?.(f)));}catch{}
  const bg=x.createRadialGradient(240,0,40,240,0,900);bg.addColorStop(0,'#1d2025');bg.addColorStop(1,'#111316');x.fillStyle=bg;x.fillRect(0,0,W,H);
@@ -366,7 +370,7 @@ function confirmCheckout(label){
 function cancelCheckout(){state.checkoutConfirm=null;state.lastSubmitAt=0;render();}
 function undo(){if(!state.undo.length||!state.game)return;cancelBot();state.redo.push(clone(state.game));state.game=normalizeGame(state.undo.pop());while(state.undo.length&&isBotTurn())state.redo.push(clone(state.game)),state.game=normalizeGame(state.undo.pop());state.visitValue='';state.inputError='';state.previewPlayerId=null;save();render();}
 function redo(){if(!state.redo.length||!state.game)return;cancelBot();state.undo.push(clone(state.game));state.game=normalizeGame(state.redo.pop());while(state.redo.length&&isBotTurn())state.undo.push(clone(state.game)),state.game=normalizeGame(state.redo.pop());state.visitValue='';state.inputError='';state.previewPlayerId=null;save();render();}
-function nav(screen){state.screen=screen;state.mobileMenu=false;state.settingsOpen=false;save();render();}
+function nav(screen){if(screen==='training'&&state.screen!=='training')track('training_open');state.screen=screen;state.mobileMenu=false;state.settingsOpen=false;save();render();}
 function openEditLast(){const v=state.game?.history?.at(-1);if(!v)return;state.editLastOpen=true;state.editLastValue=String(v.total);state.editLastDarts=Number(v.dartCount)||3;state.editLastDouble=v.checkout?(v.hits?.at(-1)?.finishLabel||String(v.hits?.at(-1)?.label||'').match(/D\d+|BULL/)?.[0]||''):'';render();}
 function deleteLastVisit(){if(!state.game?.history.length)return;snapshot();state.game=rebuildGame(state.game.history.slice(0,-1));state.editLastOpen=false;state.visitValue='';state.inputError='';save();render();}
 function applyEditedLastVisit(){
@@ -536,6 +540,7 @@ function startAltGame(type){
  const level=type==='cricket'&&BOT_LEVELS.find(l=>l.level===state.botLevel);if(level&&players.length&&players.length<8)players.push({...altPlayer(state.language==='en'?`CPU · ${level.en}`:`Бот · ${level.name}`,players.length,type),bot:level.level});
  if(!players.length)return;
  if(type==='killer'){if(players.length<2){window.alert?.(state.language==='en'?'Killer needs at least two players.':'Для Killer нужно минимум два игрока.');return;}const nums=Array.from({length:20},(_,i)=>i+1).sort(()=>Math.random()-.5);players.forEach((p,i)=>{p.num=nums[i];});}
+ track('match_start',{mode:type,players:players.length,bot:level?.level||0});if(level)track('bot_match',{mode:type,level:level.level});
  cancelBot();state.game={id:id(),type,players,active:0,legStarter:0,legNumber:1,round:1,current:[],history:[],legsToWin:Number(state.legs)||1,winner:null};state.undo=[];state.redo=[];state.previewPlayerId=null;state.screen='game';save();render();
 }
 function cricketApply(g,p,h){
@@ -643,7 +648,7 @@ function createTournament(){
   const ids=[...players.keys()];if(ids.length%2)ids.push(BYE);const half=ids.length/2;
   for(let r=0;r<ids.length-1;r++){for(let i=0;i<half;i++){const a=ids[i],b=ids[ids.length-1-i];if(a!==BYE&&b!==BYE)matches.push({id:`${r+1}-${i}`,round:r+1,idx:i,a:r%2?b:a,b:r%2?a:b,winner:null,score:''});}ids.splice(1,0,ids.pop());}
  }
- state.tournament={id:id(),format:d.format,mode:d.mode,legs:d.legs,players,matches,champion:null,createdAt:Date.now()};saveTournament();render();
+ track('tournament_create',{format:d.format,players:players.length,mode:String(d.mode)});state.tournament={id:id(),format:d.format,mode:d.mode,legs:d.legs,players,matches,champion:null,createdAt:Date.now()};saveTournament();render();
 }
 function advance(t,m){const next=t.matches.find(x=>x.round===m.round+1&&x.idx===Math.floor(m.idx/2));if(next)next[m.idx%2?'b':'a']=m.winner;return next;}
 function knockoutRounds(t){return Math.max(...t.matches.map(m=>m.round));}
@@ -815,7 +820,7 @@ document.querySelectorAll('.clear-current').forEach(el=>el.addEventListener('cli
  const search=document.getElementById('checkout-search');if(search)search.oninput=e=>{state.search=e.target.value.replace(/\D/g,'').slice(0,3);render();setTimeout(()=>document.getElementById('checkout-search')?.focus(),0);};
 }
 
-if(globalThis.__CHECKOUT_LAB_TEST__)globalThis.__CL_TEST__={state,DOUBLE_IN_TOTALS,save,createTournament,playTournamentMatch,leagueTable,tDraft,resetTournamentMatch,needsDoubleIn,cricketBotAim,altDart,altFinishTurn,bobsMark,c121Dart,cleanSummary,isBotTurn,render,botVisit,botThrow,botAim,boardHitAt,BOT_LEVELS,checkoutRoutes,preparation,BOGEY,loadHistory,ensureTraining,quizPick,addDart,byLabel,isPossibleVisitTotal,validFinishDoubles,validCheckoutDartCounts,normalizeGame,rebuildGame,applyRecordedVisit,startGame,requestVisitSubmit,confirmCheckout,undo,redo,openEditLast,applyEditedLastVisit,deleteLastVisit,visitPreview};
+if(globalThis.__CHECKOUT_LAB_TEST__)globalThis.__CL_TEST__={state,__ctx:globalThis,DOUBLE_IN_TOTALS,save,createTournament,playTournamentMatch,leagueTable,tDraft,resetTournamentMatch,needsDoubleIn,cricketBotAim,altDart,altFinishTurn,bobsMark,c121Dart,cleanSummary,isBotTurn,render,botVisit,botThrow,botAim,boardHitAt,BOT_LEVELS,checkoutRoutes,preparation,BOGEY,loadHistory,ensureTraining,quizPick,addDart,byLabel,isPossibleVisitTotal,validFinishDoubles,validCheckoutDartCounts,normalizeGame,rebuildGame,applyRecordedVisit,startGame,requestVisitSubmit,confirmCheckout,undo,redo,openEditLast,applyEditedLastVisit,deleteLastVisit,visitPreview};
 load();render();
 document.addEventListener('visibilitychange',()=>syncWakeLock());document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&state.focusMode){state.focusMode=false;save();render();}});
 function showUndoToast(){document.querySelector('.undo-toast')?.remove();const el=document.createElement('div');el.className='undo-toast';el.setAttribute('role','status');el.textContent=state.language==='en'?'Last visit undone':'Последний подход отменён';document.body.append(el);setTimeout(()=>el.remove(),1600);}
