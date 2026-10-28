@@ -355,3 +355,15 @@ test('double in: the opening visit cannot be 180 (max 170)',()=>{
  api.state.lastSubmitAt=0;api.state.visitValue='180';api.requestVisitSubmit();
  assert.equal(api.state.game.players[0].score,151,'after opening 180 is allowed again');
 });
+
+test('Metrika goals: match start, bot match, finish and tournament',()=>{
+ const {api}=createApp();
+ const calls=[];api.state.__ym=calls;
+ globalThis.__noop=0;
+ const ctx=api.__ctx;
+ ctx.ym=(id,kind,goal,params)=>calls.push(goal);
+ api.state.names=['A'];api.state.mode=501;api.state.botLevel=2;api.state.legs=1;api.state.sets=0;api.startGame();
+ const g=api.state.game,p=g.players[0];p.score=2;api.applyRecordedVisit(g,{playerId:p.id,hits:[{label:'D1',value:2,isDouble:true}],total:2,bust:false,checkout:true,dartCount:1});api.save();api.save();
+ const d=api.tDraft();d.names=['A','B','C'];api.createTournament();
+ assert.equal(calls.join(),'match_start,bot_match,match_finish,tournament_create');
+});
