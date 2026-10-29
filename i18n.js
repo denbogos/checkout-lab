@@ -3,6 +3,8 @@
 
 const SETTINGS='checkout-lab-settings-v3';
 const exact={
+"ПРОФИЛЬ ИГРОКА":"PLAYER PROFILE","лучший матч":"best match avg","легов выиграно":"legs won","подходов 100+":"100+ visits","лучший лег, дротиков":"best leg, darts","Средний набор по неделям":"Weekly average","Достижения":"Achievements","График появится, когда будут матчи хотя бы за две недели.":"The chart appears once you have matches in at least two weeks.","Нет матчей":"No matches","У этого игрока пока нет завершённых матчей 301/501.":"This player has no finished 301/501 matches yet.","Первый матч":"First match","Сыграть первый матч":"Play your first match","Первая победа":"First win","Выиграть матч":"Win a match","Завсегдатай":"Regular","Сыграть 10 матчей":"Play 10 matches","Тон":"Ton","Набрать 100+ за подход":"Score 100+ in a visit","Тон-сорок":"Ton-forty","Набрать 140+ за подход":"Score 140+ in a visit","Максимум":"Maximum","Выбить 180":"Hit a 180","Тон-аут":"Ton-out","Закрыть 100+":"Check out 100+","Закрыть 170":"Check out 170","Средний 60+":"60+ average","Матч со средним 60+":"A match with a 60+ average","Средний 80+":"80+ average","Матч со средним 80+":"A match with an 80+ average","Лег за 15":"15-dart leg","Выиграть лег за 15 дротиков или быстрее":"Win a leg in 15 darts or fewer","Девятидротиковый":"Nine-darter","Идеальный лег за 9 дротиков":"The perfect 9-dart leg","Победил профи":"Beat the pro","Обыграть бота «Профи»":"Beat the Pro computer",
+"Сказать сумму голосом":"Say the score",
 "Checkout Lab бесплатный и без рекламы. Спасибо, что помогаете ему развиваться!":"Checkout Lab is free and ad-free. Thank you for helping it grow!","Картой или СБП":"Card (Russian banks)","Карты банков России · CloudTips":"Russian bank cards only · CloudTips","Криптовалюта — из любой страны":"Crypto — from any country","Копировать":"Copy","Скопировано":"Copied","Оба адреса принимают только USDT: первый — в сети TRON (TRC20), второй — в сети TON. Другие монеты и сети не отправляйте — перевод потеряется.":"Both addresses accept USDT only: the first on TRON (TRC20), the second on TON. Do not send other coins or networks — the transfer will be lost.","Закрыть":"Close",
 "Поддержать проект":"Support the project","Checkout Lab бесплатный и без рекламы":"Checkout Lab is free and ad-free","Понравилось? Поддержите проект":"Enjoyed it? Support the project",
 "Подсчёт очков в дартс онлайн: 301/501 и Cricket, точные закрытия, игра против компьютера, до 8 игроков. Работает без интернета.":"Online darts score keeper for 301/501 and Cricket: accurate checkouts, play against the computer, up to 8 players. Works offline.",
@@ -104,6 +106,8 @@ function dynamic(s){
  if((m=s.match(/^бот: (.+)$/)))return `computer: ${{'Новичок':'Beginner','Любитель':'Amateur','Клубный':'Club','Сильный':'Strong','Профи':'Pro'}[m[1]]||m[1]}`;
  if((m=s.match(/^до (\d+) сет(а|ов), (\d+) в сете$/)))return `first to ${m[1]} sets, ${m[3]} legs per set`;
  if((m=s.match(/^Сеть: (.+)$/)))return `Network: ${m[1]}`;
+ if((m=s.match(/^(\d+) матч(а|ей)?$/)))return `${m[1]} ${m[1]==='1'?'match':'matches'}`;
+ if((m=s.match(/^побед (\d+)%$/)))return `${m[1]}% wins`;
  if((m=s.match(/^(\d+) игроков$/)))return `${m[1]} players`;
  if((m=s.match(/^(\d+) из 16$/)))return `${m[1]} of 16`;
  if((m=s.match(/^Раунд (\d+)$/)))return `Round ${m[1]}`;

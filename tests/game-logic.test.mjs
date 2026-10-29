@@ -367,3 +367,23 @@ test('Metrika goals: match start, bot match, finish and tournament',()=>{
  const d=api.tDraft();d.names=['A','B','C'];api.createTournament();
  assert.equal(calls.join(),'match_start,bot_match,match_finish,tournament_create');
 });
+
+test('voice input understands spoken scores in Russian and English',()=>{
+ const {api}=createApp();
+ const cases={'сто сорок':140,'сто восемьдесят':180,'сорок пять':45,'шестьдесят':60,'140':140,'Сто двадцать один':121,'ноль':0,'перебор':0,'one hundred and forty':140,'a hundred and eighty':180,'twenty six':26,'sixty':60,'ton eighty':180,'one hundred and twenty-one':121};
+ for(const [t,v] of Object.entries(cases))assert.equal(api.parseSpokenScore(t),v,t);
+ for(const t of ['двести','two hundred','hello',''])assert.equal(api.parseSpokenScore(t),null,t);
+});
+
+test('player profile: stats, best leg and achievements',()=>{
+ const {api,storage}=createApp();
+ const now=Date.now();
+ storage.set('checkout-lab-history-v1',JSON.stringify([
+  {id:'m1',at:now,start:501,legsToWin:1,winner:'Dan',players:[{name:'Dan',color:'#e83f5b',wins:1,legs:1,darts:15,total:501,high:180,c180:1,best:121,tons:3,bestLeg:15},{name:'CPU · Pro',color:'#43d08a',bot:5,wins:0,legs:0,darts:15,total:400,high:140,c180:0,best:0,tons:2}]},
+  {id:'m2',at:now-8*864e5,start:501,legsToWin:1,winner:'X',players:[{name:'dan',color:'#e83f5b',wins:0,legs:0,darts:30,total:300,high:60,c180:0,best:0,tons:0},{name:'X',color:'#fff',wins:1,legs:1,darts:30,total:501,high:100,c180:0,best:40,tons:1}]}]));
+ const s=api.playerStats('Dan');
+ assert.equal(s.matches,2);assert.equal(s.wins,1);assert.equal(s.c180,1);assert.equal(s.bestLeg,15);assert.equal(s.beatPro,true);assert.equal(s.weeks.size,2);
+ const got=api.ACHIEVEMENTS.filter(a=>a[4](s)).map(a=>a[0]);
+ for(const id of ['first','win','ton','ton40','max','tonout','avg60','avg80','leg15','beatpro'])assert.ok(got.includes(id),id);
+ assert.ok(!got.includes('nine')&&!got.includes('bigfish'));
+});
