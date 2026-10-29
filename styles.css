@@ -1155,3 +1155,25 @@ a.setting-row,a.mm-row{text-decoration:none;color:inherit}
 .donate-link .ico{color:var(--red)}
 .wc-donate{display:block;margin:14px auto 0;color:var(--muted);font:500 14px/1 var(--font);text-align:center;text-decoration:none}
 .wc-donate:hover span{color:var(--acc);text-decoration:underline}
+/* ---- Donate dialog ---- */
+button.donate-link{width:100%;border:0;background:transparent;font:inherit;color:inherit;text-align:left;cursor:pointer}
+button.wc-donate{width:auto;text-align:center}
+.donate-panel{width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:22px;display:flex;flex-direction:column;gap:14px}
+.donate-lead{margin:0;color:var(--muted);line-height:1.5}
+.donate-card{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;border:1px solid var(--acc);background:var(--acc-soft);color:var(--text);text-decoration:none}
+.donate-card>span{flex:1;display:flex;flex-direction:column;gap:4px}
+.donate-card b{font:600 18px/1 var(--display);letter-spacing:.04em;text-transform:uppercase}
+.donate-card small{color:var(--muted);font-size:13px}
+.donate-card .ico{width:22px;height:22px;color:var(--acc)}
+.donate-cap{color:var(--faint);font:600 12px/1 var(--font);letter-spacing:.12em;text-transform:uppercase;margin-top:4px}
+.crypto-grid{display:grid;gap:10px}
+.crypto-card{display:flex;gap:14px;align-items:center;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--surface2)}
+.crypto-card img{flex:none;width:132px;height:132px;border-radius:8px;background:#fff}
+.cc-body{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cc-body b{font:600 22px/1 var(--display)}
+.cc-body small{color:var(--muted);font-size:13px}
+.cc-body code{font:500 12px/1.4 ui-monospace,Menlo,Consolas,monospace;word-break:break-all;color:var(--text);user-select:all}
+.cc-body .ghost-button{display:inline-flex;align-self:flex-start;min-height:36px;padding:0 14px;font-size:13px;border:1px solid var(--line);background:var(--surface)}
+.cc-body .copied{border-color:var(--green);color:var(--green)}
+.donate-warn{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+@media (max-width:480px){.crypto-card{flex-direction:column;align-items:stretch}.crypto-card img{align-self:center}}

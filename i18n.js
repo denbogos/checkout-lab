@@ -3,6 +3,7 @@
 
 const SETTINGS='checkout-lab-settings-v3';
 const exact={
+"Checkout Lab бесплатный и без рекламы. Спасибо, что помогаете ему развиваться!":"Checkout Lab is free and ad-free. Thank you for helping it grow!","Картой или СБП":"Card (Russian banks)","Карты банков России · CloudTips":"Russian bank cards only · CloudTips","Криптовалюта — из любой страны":"Crypto — from any country","Копировать":"Copy","Скопировано":"Copied","Оба адреса принимают только USDT: первый — в сети TRON (TRC20), второй — в сети TON. Другие монеты и сети не отправляйте — перевод потеряется.":"Both addresses accept USDT only: the first on TRON (TRC20), the second on TON. Do not send other coins or networks — the transfer will be lost.","Закрыть":"Close",
 "Поддержать проект":"Support the project","Checkout Lab бесплатный и без рекламы":"Checkout Lab is free and ad-free","Понравилось? Поддержите проект":"Enjoyed it? Support the project",
 "Подсчёт очков в дартс онлайн: 301/501 и Cricket, точные закрытия, игра против компьютера, до 8 игроков. Работает без интернета.":"Online darts score keeper for 301/501 and Cricket: accurate checkouts, play against the computer, up to 8 players. Works offline.",
 "7 раундов":"7 rounds","3 жизни":"3 lives","15–20 и Bull":"15–20 and Bull",
@@ -102,6 +103,7 @@ function dynamic(s){
  if((m=s.match(/^Дротик (\d)$/)))return `Dart ${m[1]}`;
  if((m=s.match(/^бот: (.+)$/)))return `computer: ${{'Новичок':'Beginner','Любитель':'Amateur','Клубный':'Club','Сильный':'Strong','Профи':'Pro'}[m[1]]||m[1]}`;
  if((m=s.match(/^до (\d+) сет(а|ов), (\d+) в сете$/)))return `first to ${m[1]} sets, ${m[3]} legs per set`;
+ if((m=s.match(/^Сеть: (.+)$/)))return `Network: ${m[1]}`;
  if((m=s.match(/^(\d+) игроков$/)))return `${m[1]} players`;
  if((m=s.match(/^(\d+) из 16$/)))return `${m[1]} of 16`;
  if((m=s.match(/^Раунд (\d+)$/)))return `Round ${m[1]}`;
