@@ -330,7 +330,9 @@ function refreshVoices(){try{voiceList=window.speechSynthesis?.getVoices?.()||[]
 function shortVoiceName(name){return String(name).replace(/^(Microsoft|Google|Apple|Yandex)\s+/i,'').split(/\s+[-–(]/)[0].trim()||name;}
 function voicesFor(lang){return voiceList.filter(v=>String(v.lang||'').toLowerCase().replace('_','-').startsWith(lang));}
 // Recorded caller packs: short MP3 clips (n0…n180, max, noscore, gameshot, match, require) played in sequence.
-const AUDIO_PACKS={en:{label:'Studio'}};
+const AUDIO_PACKS={};
+// A language gets the recorded caller once audio/<lang>/pack.json exists (generated packs ship with it).
+function loadAudioPacks(){for(const lang of ['en','ru'])fetch(`${audioRoot()}audio/${lang}/pack.json`).then(r=>r.ok?r.json():null).then(j=>{if(j&&typeof j.label==='string'){AUDIO_PACKS[lang]={label:j.label.slice(0,30)};if(state.settingsOpen||state.mobileMenu)render();}}).catch(()=>{});}
 let clipQueue=[],clipAudio=null;
 function audioRoot(){return location.pathname.startsWith('/en/')?'../':'./';}
 function playClips(names){
@@ -914,7 +916,7 @@ document.querySelectorAll('.clear-current').forEach(el=>el.addEventListener('cli
 }
 
 if(globalThis.__CHECKOUT_LAB_TEST__)globalThis.__CL_TEST__={state,playerStats,ACHIEVEMENTS,bestLegDarts,parseSpokenScore,__ctx:globalThis,DOUBLE_IN_TOTALS,save,createTournament,playTournamentMatch,leagueTable,tDraft,resetTournamentMatch,needsDoubleIn,cricketBotAim,altDart,altFinishTurn,bobsMark,c121Dart,cleanSummary,isBotTurn,render,botVisit,botThrow,botAim,boardHitAt,BOT_LEVELS,checkoutRoutes,preparation,BOGEY,loadHistory,ensureTraining,quizPick,addDart,byLabel,isPossibleVisitTotal,validFinishDoubles,validCheckoutDartCounts,normalizeGame,rebuildGame,applyRecordedVisit,startGame,requestVisitSubmit,confirmCheckout,undo,redo,openEditLast,applyEditedLastVisit,deleteLastVisit,visitPreview};
-load();render();
+load();render();if(typeof fetch==='function'&&!globalThis.__CHECKOUT_LAB_TEST__)loadAudioPacks();
 document.addEventListener('visibilitychange',()=>syncWakeLock());document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&state.focusMode){state.focusMode=false;save();render();}});
 function showUndoToast(){document.querySelector('.undo-toast')?.remove();const el=document.createElement('div');el.className='undo-toast';el.setAttribute('role','status');el.textContent=state.language==='en'?'Last visit undone':'Последний подход отменён';document.body.append(el);setTimeout(()=>el.remove(),1600);}
 function showUpdatePrompt(registration){
