@@ -335,22 +335,33 @@ const AUDIO_PACKS={};
 function loadAudioPacks(){for(const lang of ['en','ru'])fetch(`${audioRoot()}audio/${lang}/pack.json`).then(r=>r.ok?r.json():null).then(j=>{if(j&&typeof j.label==='string'){AUDIO_PACKS[lang]={label:j.label.slice(0,30)};if(state.settingsOpen||state.mobileMenu)render();}}).catch(()=>{});}
 let clipQueue=[],clipAudio=null;
 function audioRoot(){return location.pathname.startsWith('/en/')?'../':'./';}
-function playClips(names){
+// One reusable <audio> element: mobile browsers (iOS Safari, some Android) only allow playback
+// on an element that was first started from a tap, so it is "unlocked" on the first touch.
+let clipUnlocked=false;
+function clipPlayer(){if(!clipAudio){clipAudio=new Audio();clipAudio.preload='auto';}return clipAudio;}
+function unlockClips(){
+ if(clipUnlocked)return;const lang=state.language==='en'?'en':'ru';if(!AUDIO_PACKS[lang])return;
+ const a=clipPlayer();a.muted=true;a.src=`${audioRoot()}audio/${lang}/n0.mp3`;
+ a.play().then(()=>{a.pause();a.currentTime=0;a.muted=false;clipUnlocked=true;}).catch(()=>{a.muted=false;});
+}
+function playClips(names,fallback=''){
  const lang=state.language==='en'?'en':'ru';if(!AUDIO_PACKS[lang])return false;
  try{window.speechSynthesis?.cancel?.();}catch{}
- if(clipAudio){clipAudio.pause();clipAudio=null;}
+ const a=clipPlayer();a.pause();a.muted=false;
  clipQueue=names.map(n=>`${audioRoot()}audio/${lang}/${n}.mp3`);
- const next=()=>{const src=clipQueue.shift();if(!src){clipAudio=null;return;}const a=new Audio(src);clipAudio=a;a.onended=()=>setTimeout(next,60);a.onerror=next;a.play().catch(()=>{});};
+ const next=()=>{const src=clipQueue.shift();if(!src)return;a.src=src;a.play().catch(()=>{clipQueue=[];if(fallback)speakDevice(fallback);});};
+ a.onended=()=>setTimeout(next,60);a.onerror=()=>next();
  next();return true;
 }
 function callerOptions(){const lang=state.language==='en'?'en':'ru',voices=voicesFor(lang).slice().sort((a,b)=>(b.localService-a.localService)||(lang==='en'?(/en-gb/i.test(b.lang)-/en-gb/i.test(a.lang)):0)||String(a.name).localeCompare(String(b.name)));const seen=new Set(),options=[];for(const v of voices){const label=shortVoiceName(v.name);if(seen.has(label))continue;seen.add(label);options.push({key:v.name,voice:v,pitch:1,rate:1.02,label});if(options.length===6)break;}if(AUDIO_PACKS[lang])options.unshift({key:'studio',studio:true,label:AUDIO_PACKS[lang].label});if(options.filter(o=>!o.studio).length===1){const base=options.find(o=>!o.studio);options.push({key:`${base.key}|deep`,voice:base.voice,pitch:.62,rate:.9,label:lang==='en'?'Deep':'Низкий'});}return options;}
 function currentCaller(){const options=callerOptions(),key=state.callers?.[state.language];return options.find(o=>o.key===key)||options[0]||null;}
 function hasLanguageVoice(){return voicesFor(state.language==='en'?'en':'ru').length>0;}
 function voiceSummary(){const ru=voicesFor('ru').length,en=voicesFor('en').length;return `${state.language==='en'?'Voices on this device':'Голоса на устройстве'}: RU ${ru} · EN ${en} · ${state.language==='en'?'total':'всего'} ${voiceList.length}`;}
-function speak(text,force=false){if(!state.voice&&!force)return;if(currentCaller()?.studio){if(/eighty|восемьдесят/i.test(text))playClips(['max']);return;}if(typeof window.speechSynthesis==='undefined'||typeof window.SpeechSynthesisUtterance==='undefined')return;try{refreshVoices();const synth=window.speechSynthesis,caller=currentCaller();if(voiceList.length&&!caller)return;const u=new window.SpeechSynthesisUtterance(text);u.lang=caller?.voice?.lang||(state.language==='en'?'en-GB':'ru-RU');if(caller?.voice)u.voice=voiceList.find(v=>v.name===caller.voice.name)||caller.voice;u.pitch=caller?.pitch||1;u.rate=caller?.rate||1.02;if(synth.speaking||synth.pending){synth.cancel();setTimeout(()=>synth.speak(u),80);}else synth.speak(u);}catch{}}
+function speak(text,force=false){if(!state.voice&&!force)return;if(currentCaller()?.studio){unlockClips();playClips([/eighty|восемьдесят/i.test(text)?'max':'gameshot'],text);return;}speakDevice(text);}
+function speakDevice(text){if(typeof window.speechSynthesis==='undefined'||typeof window.SpeechSynthesisUtterance==='undefined')return;try{refreshVoices();const synth=window.speechSynthesis,caller=currentCaller();if(voiceList.length&&!caller)return;const u=new window.SpeechSynthesisUtterance(text);u.lang=caller?.voice?.lang||(state.language==='en'?'en-GB':'ru-RU');if(caller?.voice)u.voice=voiceList.find(v=>v.name===caller.voice.name)||caller.voice;u.pitch=caller?.pitch||1;u.rate=caller?.rate||1.02;if(synth.speaking||synth.pending){synth.cancel();setTimeout(()=>synth.speak(u),80);}else synth.speak(u);}catch{}}
 function nextCaller(){refreshVoices();const options=callerOptions();if(!options.length){render();return;}const i=options.findIndex(o=>o.key===currentCaller()?.key),next=options[(i+1)%options.length];state.callers={...(state.callers||{}),[state.language]:next.key};save();render();speak(state.language==='en'?'One hundred and eighty!':'Сто восемьдесят!',true);}
 if(typeof window.speechSynthesis!=='undefined'){refreshVoices();try{window.speechSynthesis.addEventListener?.('voiceschanged',()=>{refreshVoices();if(state.settingsOpen||state.mobileMenu)render();});}catch{}}
-function callVisit(next,total,bust,checkout){if(!state.voice)return;if(currentCaller()?.studio){const clips=bust?['noscore']:checkout?[next.winner?'match':'gameshot']:[total===180?'max':`n${total}`];if(!checkout&&!next.winner){const up=next.players[next.active];if(up&&up.score<=170&&checkoutRoutes(up.score,3,1).length)clips.push('require',`n${up.score}`);}playClips(clips);return;}const en=state.language==='en';let text=bust?(en?'No score':'Перебор'):checkout?(next.winner?(en?'Game shot, and the match!':'Лег и матч!'):(en?'Game shot!':'Лег!')):total===180?(en?'One hundred and eighty!':'Сто восемьдесят!'):String(total);if(!checkout&&!next.winner){const up=next.players[next.active];if(up&&up.score<=170&&checkoutRoutes(up.score,3,1).length)text+=en?`. ${up.name}, you require ${up.score}.`:`. ${up.name}, осталось ${up.score}.`;}speak(text);}
+function callVisit(next,total,bust,checkout){if(!state.voice)return;const en=state.language==='en';let text=bust?(en?'No score':'Перебор'):checkout?(next.winner?(en?'Game shot, and the match!':'Лег и матч!'):(en?'Game shot!':'Лег!')):total===180?(en?'One hundred and eighty!':'Сто восемьдесят!'):String(total);if(!checkout&&!next.winner){const up=next.players[next.active];if(up&&up.score<=170&&checkoutRoutes(up.score,3,1).length)text+=en?`. ${up.name}, you require ${up.score}.`:`. ${up.name}, осталось ${up.score}.`;}if(currentCaller()?.studio){const clips=bust?['noscore']:checkout?[next.winner?'match':'gameshot']:[total===180?'max':`n${total}`];if(!checkout&&!next.winner){const up=next.players[next.active];if(up&&up.score<=170&&checkoutRoutes(up.score,3,1).length)clips.push('require',`n${up.score}`);}playClips(clips,text);return;}speak(text);}
 function addDart(h,fromBot=false){
  if(state.game?.type==='cricket')return altDart(h,fromBot);
  if(!fromBot&&isBotTurn())return;
@@ -917,6 +928,7 @@ document.querySelectorAll('.clear-current').forEach(el=>el.addEventListener('cli
 
 if(globalThis.__CHECKOUT_LAB_TEST__)globalThis.__CL_TEST__={state,playerStats,ACHIEVEMENTS,bestLegDarts,parseSpokenScore,__ctx:globalThis,DOUBLE_IN_TOTALS,save,createTournament,playTournamentMatch,leagueTable,tDraft,resetTournamentMatch,needsDoubleIn,cricketBotAim,altDart,altFinishTurn,bobsMark,c121Dart,cleanSummary,isBotTurn,render,botVisit,botThrow,botAim,boardHitAt,BOT_LEVELS,checkoutRoutes,preparation,BOGEY,loadHistory,ensureTraining,quizPick,addDart,byLabel,isPossibleVisitTotal,validFinishDoubles,validCheckoutDartCounts,normalizeGame,rebuildGame,applyRecordedVisit,startGame,requestVisitSubmit,confirmCheckout,undo,redo,openEditLast,applyEditedLastVisit,deleteLastVisit,visitPreview};
 load();render();if(typeof fetch==='function'&&!globalThis.__CHECKOUT_LAB_TEST__)loadAudioPacks();
+document.addEventListener('pointerdown',()=>{if(state.voice&&currentCaller()?.studio)unlockClips();},{passive:true});
 document.addEventListener('visibilitychange',()=>syncWakeLock());document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&state.focusMode){state.focusMode=false;save();render();}});
 function showUndoToast(){document.querySelector('.undo-toast')?.remove();const el=document.createElement('div');el.className='undo-toast';el.setAttribute('role','status');el.textContent=state.language==='en'?'Last visit undone':'Последний подход отменён';document.body.append(el);setTimeout(()=>el.remove(),1600);}
 function showUpdatePrompt(registration){

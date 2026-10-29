@@ -38,9 +38,9 @@ test('score event labels are localized in English',()=>{
 
 test('service worker caches only successful same-origin responses',()=>{
  const source=readFileSync(resolve(root,'sw.js'),'utf8');
- assert.match(source,/CACHE=`\$\{CACHE_PREFIX\}v3\.5\.2`/);
+ assert.match(source,/CACHE=`\$\{CACHE_PREFIX\}v3\.5\.4`/);
  assert.match(source,/url\.origin!==self\.location\.origin/);
- assert.match(source,/response\?\.ok&&response\.type==='basic'/);
+ assert.match(source,/response\?\.status===200&&response\.type==='basic'/);
  assert.match(source,/path\.startsWith\('\/en\/'\)\?'\/en\/index\.html':'\/index\.html'/);
  assert.match(source,/SKIP_WAITING/);
  assert.doesNotMatch(source,/cdn\.jsdelivr\.net/);
