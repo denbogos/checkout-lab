@@ -90,3 +90,8 @@ body{background:radial-gradient(1000px 480px at 10% -10%,var(--bg-glow),transpar
  .co-chips{order:3;width:100%}
  .terms{grid-template-columns:1fr}
 }
+.co-miss{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:8px}
+.co-miss li{display:flex;flex-direction:column;gap:6px;padding:12px 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.co-miss li b:first-child{color:var(--text);font:500 17px/1.2 var(--display);letter-spacing:.03em}
+.co-miss li span{color:var(--muted);display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.co-miss .route-hit{font-size:18px;min-width:0;padding:0 8px}
