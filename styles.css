@@ -1150,3 +1150,8 @@ a.mm-link{text-decoration:none;color:inherit}
  .setup-card .start-button{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom));z-index:20;box-shadow:0 10px 30px rgba(0,0,0,.45)}
 }
 @media (max-width:360px){.setup-intro h1{font-size:25px}}
+/* ---- Donate link ---- */
+a.setting-row,a.mm-row{text-decoration:none;color:inherit}
+.donate-link .ico{color:var(--red)}
+.wc-donate{display:block;margin:14px auto 0;color:var(--muted);font:500 14px/1 var(--font);text-align:center;text-decoration:none}
+.wc-donate:hover span{color:var(--acc);text-decoration:underline}
