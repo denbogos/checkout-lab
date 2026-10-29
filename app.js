@@ -344,13 +344,15 @@ function unlockClips(){
  const a=clipPlayer();a.muted=true;a.src=`${audioRoot()}audio/${lang}/n0.mp3`;
  a.play().then(()=>{a.pause();a.currentTime=0;a.muted=false;clipUnlocked=true;}).catch(()=>{a.muted=false;});
 }
+let clipToken=0;
+function stopCaller(){clipToken++;clipQueue=[];if(clipAudio){try{clipAudio.pause();}catch{}}try{window.speechSynthesis?.cancel?.();}catch{}}
 function playClips(names,fallback=''){
  const lang=state.language==='en'?'en':'ru';if(!AUDIO_PACKS[lang])return false;
  try{window.speechSynthesis?.cancel?.();}catch{}
- const a=clipPlayer();a.pause();a.muted=false;
+ const a=clipPlayer();a.pause();a.muted=false;const token=++clipToken;
  clipQueue=names.map(n=>`${audioRoot()}audio/${lang}/${n}.mp3`);
- const next=()=>{const src=clipQueue.shift();if(!src)return;a.src=src;a.play().catch(()=>{clipQueue=[];if(fallback)speakDevice(fallback);});};
- a.onended=()=>setTimeout(next,60);a.onerror=()=>next();
+ const next=()=>{if(token!==clipToken)return;const src=clipQueue.shift();if(!src)return;a.src=src;a.play().catch(()=>{clipQueue=[];if(fallback)speakDevice(fallback);});};
+ a.onended=()=>setTimeout(next,60);a.onerror=()=>setTimeout(next,0);
  next();return true;
 }
 function callerOptions(){const lang=state.language==='en'?'en':'ru',voices=voicesFor(lang).slice().sort((a,b)=>(b.localService-a.localService)||(lang==='en'?(/en-gb/i.test(b.lang)-/en-gb/i.test(a.lang)):0)||String(a.name).localeCompare(String(b.name)));const seen=new Set(),options=[];for(const v of voices){const label=shortVoiceName(v.name);if(seen.has(label))continue;seen.add(label);options.push({key:v.name,voice:v,pitch:1,rate:1.02,label});if(options.length===6)break;}if(AUDIO_PACKS[lang])options.unshift({key:'studio',studio:true,label:AUDIO_PACKS[lang].label});if(options.filter(o=>!o.studio).length===1){const base=options.find(o=>!o.studio);options.push({key:`${base.key}|deep`,voice:base.voice,pitch:.62,rate:.9,label:lang==='en'?'Deep':'Низкий'});}return options;}
@@ -422,17 +424,28 @@ function parseSpokenScore(text){
 let recognizer=null;
 function voiceInputSupported(){return !!(window.SpeechRecognition||window.webkitSpeechRecognition);}
 function micButton(cls=''){return voiceInputSupported()?`<button class="mic-button ${cls} ${state.listening?'listening':''}" type="button" aria-label="Сказать сумму голосом" title="Сказать сумму голосом">${icon('mic')}</button>`:'';}
+const VOICE_ERRORS={
+ 'not-allowed':['Нет доступа к микрофону — разрешите его для сайта в настройках браузера','No microphone access — allow it for this site in the browser settings'],
+ 'service-not-allowed':['Распознавание речи выключено в браузере — попробуйте Chrome','Speech recognition is disabled in this browser — try Chrome'],
+ 'audio-capture':['Микрофон не найден или занят другим приложением','No microphone found, or another app is using it'],
+ 'network':['Для распознавания речи нужен интернет','Speech recognition needs an internet connection'],
+ 'no-speech':['Не расслышал — скажите сумму громче, ближе к телефону','Did not hear you — say the score louder, closer to the phone'],
+ 'language-not-supported':['Русский язык распознавания не установлен — установите «Google» в настройках голосового ввода','This language is not available for speech recognition on your device']
+};
 function startVoiceInput(){
  if(state.listening){recognizer?.stop();return;}
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
+ stopCaller();
+ const en=state.language==='en',fail=code=>{const m=VOICE_ERRORS[code]||['Распознавание речи не сработало в этом браузере — попробуйте Chrome','Speech recognition did not work in this browser — try Chrome'];state.voiceHeard='';state.voiceError=m[en?1:0];};
  try{
-  recognizer=new SR();recognizer.lang=state.language==='en'?'en-GB':'ru-RU';recognizer.interimResults=false;recognizer.maxAlternatives=5;
-  recognizer.onresult=e=>{const alts=[...e.results[0]].map(a=>a.transcript);let v=null;for(const a of alts){v=parseSpokenScore(a);if(v!==null)break;}
+  let got=false;
+  recognizer=new SR();recognizer.lang=en?'en-GB':'ru-RU';recognizer.interimResults=false;recognizer.continuous=false;recognizer.maxAlternatives=5;
+  recognizer.onresult=e=>{got=true;const alts=[...e.results[0]].map(a=>a.transcript);let v=null;for(const a of alts){v=parseSpokenScore(a);if(v!==null)break;}
    if(v===null){state.inputError='';state.voiceHeard=alts[0]||'';}else{state.visitValue=String(v);state.voiceHeard='';track('voice_input');}haptic('tap');};
-  recognizer.onerror=()=>{state.listening=false;render();};
-  recognizer.onend=()=>{state.listening=false;render();updateVisitInputUI({punch:true});};
-  state.listening=true;state.voiceHeard='';recognizer.start();render();
- }catch{state.listening=false;render();}
+  recognizer.onerror=e=>{got=true;if(e?.error!=='aborted')fail(e?.error);};
+  recognizer.onend=()=>{if(!got)fail('no-speech');state.listening=false;render();updateVisitInputUI({punch:true});};
+  state.listening=true;state.voiceHeard='';state.voiceError='';recognizer.start();render();
+ }catch{state.listening=false;fail('');render();}
 }
 function updateVisitInputUI({punch=true}={}){
  const desktop=document.getElementById('visit-desktop');if(desktop&&desktop.value!==state.visitValue)desktop.value=state.visitValue;
@@ -442,7 +455,7 @@ function updateVisitInputUI({punch=true}={}){
  if(desktopPreview)window.CheckoutI18n?.apply?.(desktopPreview,state.language);
 }
 function keypad(k){
- state.inputError='';state.voiceHeard='';
+ state.inputError='';state.voiceHeard='';state.voiceError='';
  if(k==='ok'){playSound('confirm');haptic('confirm');return requestVisitSubmit();}
  if(k==='back'){state.visitValue=state.visitValue.slice(0,-1);playSound('back');haptic('back');}
  else if(/^\d$/.test(k)){const next=(state.visitValue+k).replace(/^0+(?=\d)/,'');if(Number(next)<=180&&next.length<=3){state.visitValue=next;playSound('tap');haptic('tap');}}
@@ -575,7 +588,7 @@ function profileView(){
  <h2 class="profile-h"><span>Достижения</span> <small>${got} / ${ACHIEVEMENTS.length}</small></h2><div class="ach-grid">${ACHIEVEMENTS.map(([id,ic,t,d,f])=>{const on=f(s);return `<div class="ach ${on?'on':''}" title="${d}">${icon(ic)}<b>${t}</b><small>${d}</small></div>`;}).join('')}</div></section>`;
 }
 function statsView(){const g=state.game,history=loadHistory();if(!g&&!history.length)return emptyState('Нет статистики','Сначала начни матч.');return `<section class="stats-page">${g?.type?altStats(g):g?`<div class="page-heading"><span class="kicker">ТЕКУЩИЙ МАТЧ</span><h1>Статистика</h1><p>${g.startScore} · Double Out · ${g.history.length} подходов</p></div><div class="stats-grid">${g.players.map(p=>{const mine=g.history.filter(v=>v.playerId===p.id&&!v.bust),tons=mine.filter(v=>v.total>=100).length,best=bestCheckout(g,p);return `<article class="stat-card panel" style="--player:${p.color}"><div class="stat-head"><span class="player-bar"></span><h2>${esc(p.name)}</h2>${legPips(p,g)}</div><strong>${p.darts?(p.total/p.darts*3).toFixed(2):'0.00'}<small>средний набор</small></strong>${visitChart(g,p)}<div class="stat-metrics"><span><b>${p.high}</b>лучший подход</span><span><b>${best||'—'}</b>лучшее закрытие</span><span><b>${tons}</b>100+</span><span><b>${count180(g,p)}</b>180</span><span><b>${p.darts}</b>дротиков</span><span><b>${p.legsWon??p.wins}</b>легов</span>${g.setsToWin?`<span><b>${p.sets||0}</b>сетов</span>`:''}</div></article>`;}).join('')}</div>`:`<div class="page-heading"><span class="kicker">CHECKOUT LAB</span><h1>Статистика</h1></div>`}${allTimeView()}</section>`;}
-function visitPreview(){const p=activePlayer(),en=state.language==='en';if(state.listening)return `<span class="preview-listening">${en?'Listening… say the score':'Слушаю… скажите сумму'}</span>`;if(state.voiceHeard&&state.visitValue==='')return `<span class="preview-impossible">${en?`Did not catch a score: “${esc(state.voiceHeard)}”`:`Не понял число: «${esc(state.voiceHeard)}»`}</span>`;if(p&&state.visitValue===''&&needsDoubleIn())return `<span>${en?'Double In: count only darts from the double on':'Double In: считайте очки, начиная с удвоения'}</span>`;if(!p||state.visitValue==='')return `<span>${en?'Enter visit score':'Введите сумму подхода'}</span>`;const v=Number(state.visitValue);if(!isPossibleVisitTotal(v))return `<span class="preview-impossible">${en?`${v} cannot be scored with 3 darts`:`${v} нельзя набрать за 3 дротика`}</span>`;if(needsDoubleIn()&&!DOUBLE_IN_TOTALS.has(v))return `<span class="preview-impossible">${en?`Double In: ${v} is impossible when scoring starts on a double (max 170)`:`Double In: ${v} не набрать, начиная с удвоения (максимум 170)`}</span>`;const left=p.score-v;if(left<0||left===1)return `<span class="preview-bust">${en?'BUST — score stays unchanged':'BUST — счёт не изменится'}</span>`;if(left===0)return `<span class="preview-checkout">${en?'CHECKOUT · choose the finishing double':'ЗАКРЫТИЕ · выберите последнее удвоение'}</span>`;const next=checkoutRoutes(left,3,1)[0];return `<span>${en?'remaining':'останется'} <b>${left}</b>${next?` <em class="preview-route">· ${next.map(h=>h.label).join(' › ')}</em>`:''}</span>`;}
+function visitPreview(){const p=activePlayer(),en=state.language==='en';if(state.listening)return `<span class="preview-listening">${en?'Listening… say the score':'Слушаю… скажите сумму'}</span>`;if(state.voiceError&&state.visitValue==='')return `<span class="preview-impossible">${esc(state.voiceError)}</span>`;if(state.voiceHeard&&state.visitValue==='')return `<span class="preview-impossible">${en?`Did not catch a score: “${esc(state.voiceHeard)}”`:`Не понял число: «${esc(state.voiceHeard)}»`}</span>`;if(p&&state.visitValue===''&&needsDoubleIn())return `<span>${en?'Double In: count only darts from the double on':'Double In: считайте очки, начиная с удвоения'}</span>`;if(!p||state.visitValue==='')return `<span>${en?'Enter visit score':'Введите сумму подхода'}</span>`;const v=Number(state.visitValue);if(!isPossibleVisitTotal(v))return `<span class="preview-impossible">${en?`${v} cannot be scored with 3 darts`:`${v} нельзя набрать за 3 дротика`}</span>`;if(needsDoubleIn()&&!DOUBLE_IN_TOTALS.has(v))return `<span class="preview-impossible">${en?`Double In: ${v} is impossible when scoring starts on a double (max 170)`:`Double In: ${v} не набрать, начиная с удвоения (максимум 170)`}</span>`;const left=p.score-v;if(left<0||left===1)return `<span class="preview-bust">${en?'BUST — score stays unchanged':'BUST — счёт не изменится'}</span>`;if(left===0)return `<span class="preview-checkout">${en?'CHECKOUT · choose the finishing double':'ЗАКРЫТИЕ · выберите последнее удвоение'}</span>`;const next=checkoutRoutes(left,3,1)[0];return `<span>${en?'remaining':'останется'} <b>${left}</b>${next?` <em class="preview-route">· ${next.map(h=>h.label).join(' › ')}</em>`:''}</span>`;}
 const DONATE_URL='https://pay.cloudtips.ru/p/e2533622';
 const CRYPTO=[['USDT','TRON (TRC20)','TYxd4EqP7iD5GFHc27PJ2uVNcNXwvrHJB8','qr-usdt-trc20.svg'],['USDT','TON','UQCX-paXsKfr5ivu_YA8SRfreYEAlVm4g6ncQJ90GfdebwMR','qr-usdt-ton.svg']];
 function donateLink(cls,inner){return `<button class="${cls} donate-link" type="button">${inner}</button>`;}
@@ -928,7 +941,7 @@ document.querySelectorAll('.clear-current').forEach(el=>el.addEventListener('cli
 
 if(globalThis.__CHECKOUT_LAB_TEST__)globalThis.__CL_TEST__={state,playerStats,ACHIEVEMENTS,bestLegDarts,parseSpokenScore,__ctx:globalThis,DOUBLE_IN_TOTALS,save,createTournament,playTournamentMatch,leagueTable,tDraft,resetTournamentMatch,needsDoubleIn,cricketBotAim,altDart,altFinishTurn,bobsMark,c121Dart,cleanSummary,isBotTurn,render,botVisit,botThrow,botAim,boardHitAt,BOT_LEVELS,checkoutRoutes,preparation,BOGEY,loadHistory,ensureTraining,quizPick,addDart,byLabel,isPossibleVisitTotal,validFinishDoubles,validCheckoutDartCounts,normalizeGame,rebuildGame,applyRecordedVisit,startGame,requestVisitSubmit,confirmCheckout,undo,redo,openEditLast,applyEditedLastVisit,deleteLastVisit,visitPreview};
 load();render();if(typeof fetch==='function'&&!globalThis.__CHECKOUT_LAB_TEST__)loadAudioPacks();
-document.addEventListener('pointerdown',()=>{if(state.voice&&currentCaller()?.studio)unlockClips();},{passive:true});
+document.addEventListener('pointerdown',e=>{if(e.target?.closest?.('.mic-button'))return;if(state.voice&&currentCaller()?.studio)unlockClips();},{passive:true});
 document.addEventListener('visibilitychange',()=>syncWakeLock());document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&state.focusMode){state.focusMode=false;save();render();}});
 function showUndoToast(){document.querySelector('.undo-toast')?.remove();const el=document.createElement('div');el.className='undo-toast';el.setAttribute('role','status');el.textContent=state.language==='en'?'Last visit undone':'Последний подход отменён';document.body.append(el);setTimeout(()=>el.remove(),1600);}
 function showUpdatePrompt(registration){
