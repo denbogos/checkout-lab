@@ -3,6 +3,7 @@
 
 const SETTINGS='checkout-lab-settings-v3';
 const exact={
+"Поддержать проект":"Support the project","Checkout Lab бесплатный и без рекламы":"Checkout Lab is free and ad-free","Понравилось? Поддержите проект":"Enjoyed it? Support the project",
 "Подсчёт очков в дартс онлайн: 301/501 и Cricket, точные закрытия, игра против компьютера, до 8 игроков. Работает без интернета.":"Online darts score keeper for 301/501 and Cricket: accurate checkouts, play against the computer, up to 8 players. Works offline.",
 "7 раундов":"7 rounds","3 жизни":"3 lives","15–20 и Bull":"15–20 and Bull",
 "без бота":"no computer","Double Out":"Double Out",
