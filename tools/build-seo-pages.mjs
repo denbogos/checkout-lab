@@ -25,6 +25,14 @@ const T={
   ogAlt:'Checkout Lab — 301/501 darts scorer'}
 };
 
+
+// Footer with links to every guide, so each page passes weight to the articles.
+const FOOT={
+ ru:['Полезное',[['darts-for-beginners.html','Как играть в дартс'],['darts-rules.html','Правила 501'],['double-out.html','Double Out'],['darts-cricket.html','Крикет'],['darts-games.html','Shanghai и Killer'],['darts-training.html','Тренировки'],['darts-tournament.html','Турнирная сетка'],['darts-board-size.html','Высота мишени'],['darts-choose.html','Выбор дротиков'],['checkout-table.html','Таблица закрытий'],['checkout-calculator.html','Калькулятор закрытий'],['darts-terms.html','Термины']]],
+ en:['Guides',[['darts-for-beginners.html','How to play darts'],['darts-rules.html','501 rules'],['double-out.html','Double Out'],['darts-cricket.html','Cricket'],['darts-games.html','Shanghai and Killer'],['darts-training.html','Practice games'],['darts-tournament.html','Tournament bracket'],['darts-board-size.html','Dartboard height'],['darts-choose.html','Choosing darts'],['checkout-table.html','Checkout table'],['checkout-calculator.html','Checkout calculator'],['darts-terms.html','Darts terms']]]
+};
+function footer(lang,home){const [cap,links]=FOOT[lang];return `<nav class="seo-foot" aria-label="${cap}"><span>${cap}:</span>${links.map(([h,t])=>`<a href="${home}${h}">${t}</a>`).join('')}<a href="${home}">${lang==='ru'?'Счётчик дартса':'Darts scorer'}</a></nav>`;}
+
 // path: site-relative path of the page, e.g. "checkout/121.html" or "en/checkout/121.html"
 function page({lang,path,altPath,title,description,body,jsonld=[]}){
  const depth=path.split('/').length-1,root='../'.repeat(depth)||'./',home=lang==='en'?(depth?'../'.repeat(depth-1):'./'):root;
@@ -40,7 +48,7 @@ function page({lang,path,altPath,title,description,body,jsonld=[]}){
 <link rel="icon" href="${root}favicon-48.png" type="image/png" sizes="48x48"><link rel="stylesheet" href="${root}styles.css"><link rel="stylesheet" href="${root}seo.css"><script src="/metrika.js" async></script>
 ${jsonld.map(j=>`<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
 </head><body><nav class="seo-nav"><a class="brand" href="${home}" aria-label="Checkout Lab"><span class="brand-mark"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg></span><span class="brand-name">Checkout<b>Lab</b></span></a><div class="seo-links">${links}</div><a class="lang" href="${langHref}">${t.lang}</a></nav>
-<main class="seo-content">${body}</main></body></html>
+<main class="seo-content">${body}</main>${footer(lang,home)}</body></html>
 `;
 }
 
