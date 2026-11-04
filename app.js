@@ -847,7 +847,7 @@ function editLastModal(){if(!state.editLastOpen||!state.game?.history.length)ret
 
 
 function render(){
- document.documentElement.dataset.theme=state.theme;document.body.className=`${state.screen==='game'&&!state.game?.type?'game-screen ':''}${state.screen==='game'&&state.game?.type?'alt-screen ':''}${state.focusMode?'focus-mode':''}`.trim();
+ document.documentElement.dataset.theme=state.theme;document.body.className=`screen-${state.screen} ${state.screen==='game'&&!state.game?.type?'game-screen ':''}${state.screen==='game'&&state.game?.type?'alt-screen ':''}${state.focusMode?'focus-mode':''}`.trim();
  const content=state.screen==='setup'?setupView():state.screen==='game'?gameView():state.screen==='checkouts'?checkoutTable():state.screen==='training'?trainingView():state.screen==='tournament'?tournamentView():state.screen==='profile'?profileView():statsView();
  const app=document.getElementById('app');app.innerHTML=`<main class="app ${state.theme==='light'?'light':''}">${header()}${mobileMenu()}${content}${historyDrawer()}${momentOverlay()}${confirmModal()}${settingsPanel()}${editLastModal()}${donateModal()}</main>`;window.CheckoutI18n?.apply?.(app,state.language);window.CheckoutI18n?.applyMeta?.(state.language,'app');bind();syncWakeLock();scheduleBot();
  const dialog=app.querySelector?.('[role="dialog"]');if(dialog)requestAnimationFrame(()=>dialog.querySelector('input,button,select,[tabindex="0"]')?.focus({preventScroll:true}));

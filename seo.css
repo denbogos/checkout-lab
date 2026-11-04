@@ -95,3 +95,6 @@ body{background:radial-gradient(1000px 480px at 10% -10%,var(--bg-glow),transpar
 .co-miss li b:first-child{color:var(--text);font:500 17px/1.2 var(--display);letter-spacing:.03em}
 .co-miss li span{color:var(--muted);display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .co-miss .route-hit{font-size:18px;min-width:0;padding:0 8px}
+.seo-foot{max-width:1120px;margin:0 auto;padding:22px clamp(16px,3vw,24px) 40px;display:flex;flex-wrap:wrap;gap:6px 18px;border-top:1px solid var(--line);font:600 14px/1.5 var(--font);letter-spacing:.05em;text-transform:uppercase;color:var(--text)}
+.seo-foot a{color:var(--muted);text-decoration:none}
+.seo-foot a:hover{color:var(--acc)}
