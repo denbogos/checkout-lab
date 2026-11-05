@@ -85,7 +85,7 @@ function runMomentMotion(kind){
 }
 function isPossibleVisitTotal(v){return Number.isInteger(v)&&v>=0&&v<=180&&POSSIBLE_VISIT_TOTALS.has(v);}
 function prefixReachable(total,maxDarts=2){if(total===0)return true;if(total<0)return false;for(const a of ALL){if(a.value===total)return true;if(maxDarts>=2)for(const b of ALL)if(a.value+b.value===total)return true;}return false;}
-function validFinishDoubles(total){const preferred=(canonical[total]||[]).at(-1);return finishers.filter(f=>prefixReachable(total-f.value,2)).sort((a,b)=>{if(a.label===preferred)return -1;if(b.label===preferred)return 1;const ai=preferredDoubles.indexOf(a.label),bi=preferredDoubles.indexOf(b.label);return (ai<0?99:ai)-(bi<0?99:bi);});}
+function validFinishDoubles(total){const preferred=(canonical[total]||[]).at(-1)||checkoutRoutes(total,3,1)[0]?.at(-1)?.label;return finishers.filter(f=>prefixReachable(total-f.value,2)).sort((a,b)=>{if(a.label===preferred)return -1;if(b.label===preferred)return 1;const ai=preferredDoubles.indexOf(a.label),bi=preferredDoubles.indexOf(b.label);return (ai<0?99:ai)-(bi<0?99:bi);});}
 function validCheckoutDartCounts(total,doubleLabel){const d=byLabel[doubleLabel];if(!d?.isDouble)return[];const rest=total-d.value,out=[];if(rest===0)out.push(1);if(rest>=0&&ALL.some(a=>a.value===rest))out.push(2);if(rest>=0&&ALL.some(a=>ALL.some(b=>a.value+b.value===rest)))out.push(3);return [...new Set(out)];}
 
 async function syncWakeLock(){

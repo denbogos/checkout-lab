@@ -387,3 +387,10 @@ test('player profile: stats, best leg and achievements',()=>{
  for(const id of ['first','win','ton','ton40','max','tonout','avg60','avg80','leg15','beatpro'])assert.ok(got.includes(id),id);
  assert.ok(!got.includes('nine')&&!got.includes('bigfish'));
 });
+
+test('finishing double dialog recommends the same double as the checkout route (34 → D17)',()=>{
+ const {api}=createApp();
+ for(let t=2;t<=170;t++){const d=api.validFinishDoubles(t),r=api.checkoutRoutes(t,3,1)[0];if(d.length&&r)assert.equal(d[0].label,r.at(-1).label,String(t));}
+ assert.equal(api.validFinishDoubles(34)[0].label,'D17');
+ assert.equal(api.validCheckoutDartCounts(34,'D17')[0],1,'one dart is offered first');
+});
